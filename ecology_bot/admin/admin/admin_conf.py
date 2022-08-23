@@ -17,6 +17,7 @@ from ecology_bot.database.models import (
     Activity,
     Organization,
     Event, Region,
+    User,
 )
 
 
@@ -76,6 +77,14 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="События",
             endpoint="events",
+        )
+    )
+    admin.add_view(
+        UserModelView(
+            model=User,
+            session=database.session,
+            name='Пользователи',
+            endpoint='users',
         )
     )
     admin.add_link(LoginLink(name="Login"))
