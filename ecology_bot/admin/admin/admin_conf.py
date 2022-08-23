@@ -8,6 +8,7 @@ from ecology_bot.admin.admin.models.event import EventModelView
 from ecology_bot.admin.admin.models.organization import OrganizationModelView
 from ecology_bot.admin.admin.models.region import RegionModelView
 from ecology_bot.admin.admin.models.volunteer_type import VolunteerTypeModelView
+from ecology_bot.admin.admin.models.user import UserModelView
 from ecology_bot.admin.admin.pages.auth import LoginLink, LogoutLink, LoginView
 from ecology_bot.admin.admin.pages.home import HomeAdminIndexView
 from ecology_bot.database.models import (

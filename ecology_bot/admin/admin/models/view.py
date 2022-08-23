@@ -5,6 +5,9 @@ from werkzeug.utils import redirect
 
 
 class SecureModelView(ModelView):
+    can_export = True
+    can_view_details = True 
+    
     def is_accessible(self):
         return current_user.is_authenticated
 

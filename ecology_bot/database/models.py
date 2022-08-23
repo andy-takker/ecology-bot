@@ -95,7 +95,7 @@ class District(PkMixin, Base):
         nullable=False,
         index=True,
     )
-    region_id = Column(BigInteger, ForeignKey("region.id"), index=True, nullable=True)
+    region_id = Column(BigInteger, ForeignKey("region.id"), index=True, nullable=False)
     parent_id = Column(
         BigInteger, ForeignKey("district.id"), index=True, default=None, nullable=True
     )
