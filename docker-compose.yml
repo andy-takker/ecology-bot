@@ -1,0 +1,118 @@
+version: '3.0'
+
+services:
+  database:
+    container_name: 'bot_postgres'
+    image: 'postgres:13'
+    restart: on-failure
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+
+  redis:
+    container_name: 'bot_redis'
+    image: redis
+    restart: always
+    command: "redis-server --requirepass ${REDIS_PASSWORD:-password}"
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+
+  admin:
+    container_name: 'bot_admin'
+    build:
+      context: .
+      dockerfile: ./docker/bot/Dockerfile
+    depends_on:
+      - database
+    restart: on-failure
+    command: poetry run gunicorn -c ecology_bot/admin/gunicorn_conf.py ecology_bot.admin.wsgi:app
+    environment:
+      DEBUG: ${DEBUG}
+
+      POSTGRES_HOST: database
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_BOT_ADMINS: ${TELEGRAM_BOT_ADMINS}
+
+      FLASK_APP: "ecology_bot.admin.wsgi:app"
+
+  nginx:
+    container_name: 'bot_nginx'
+    build: ./docker/nginx
+    ports:
+      - "1337:80"
+    depends_on:
+      - admin
+  bot:
+    container_name: 'bot'
+    image: bot
+    depends_on:
+      - database
+      - redis
+      - worker
+    command: poetry run bot
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: docker/bot/Dockerfile
+    environment:
+      DEBUG: ${DEBUG}
+
+      POSTGRES_HOST: database
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_BOT_ADMINS: ${TELEGRAM_BOT_ADMINS}
+
+  worker:
+    container_name: 'bot_worker'
+    image: bot
+    depends_on:
+      - database
+      - redis
+    command: poetry run celery -A ecology_bot.workers.celery worker -l INFO
+    restart: on-failure
+    environment:
+      DEBUG: ${DEBUG}
+      POSTGRES_HOST: database
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+      REDIS_HOST: redis
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_BOT_ADMINS: ${TELEGRAM_BOT_ADMINS}
+
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+

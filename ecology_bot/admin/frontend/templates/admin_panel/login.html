@@ -1,0 +1,23 @@
+{% extends 'admin_panel/custom_master.html' %}
+{% from "form.html" import form_field %}
+{% block body %}
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <h2 class="title">Login</h2>
+      <hr>
+    </div>
+  </div>
+  <form method="POST" action="" class="form" role="form">
+    {{ form.csrf_token }}
+    <div class="row">
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        {{ form_field(form.login) }}
+        {{ form_field(form.password) }}
+        {{ form_field(form.remember, True, '') }}
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        {{ form.submit(class_="btn btn-primary col-sm-3") }}
+      </div>
+    </div>
+  </form>
+{% endblock body %}

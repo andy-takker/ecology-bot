@@ -1,0 +1,39 @@
+{% extends 'admin/master.html' %}
+{% block head_meta %}
+  {{ super() }}
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+{% endblock %}
+{% block title %}
+  {{ super() }}
+{% endblock %}
+{% block head_css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static',filename='admin_panel/css/admin_panel.css') }}">
+{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page_body %}
+  {{ super() }}
+{% endblock %}
+{% block brand %}
+  {{ super() }}
+{% endblock %}
+{% block main_menu %}
+  {{ super() }}
+{% endblock %}
+{% block menu_links %}
+  {{ super() }}
+{% endblock %}
+{% block access_control %}
+  {{ super() }}
+{% endblock %}
+{% block messages %}
+  {{ super() }}
+{% endblock %}
+{% block body %}
+  {{ super() }}
+{% endblock %}
+{% block tail %}
+  {{ super() }}
+{% endblock %}

@@ -1,0 +1,25 @@
+{% macro error_block(errors)  -%}
+  {% if errors %}
+    <ul class="errors">
+      {% for error in errors %}
+        <li style="color: red">{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{%- endmacro %}
+
+
+{% macro form_field(fieldname, reversed=False, class='form-control',is_hidden=False,is_error=True) %}
+  <div class="form-group" {% if is_hidden %} hidden {% endif %}>
+    {% if reversed %}
+      {{ fieldname(class_=class,value=fieldname.default) }}
+      {{ fieldname.label }}
+    {% else %}
+      {{ fieldname.label }}
+      {{ fieldname(class_=class) }}
+    {% endif %}
+  {% if is_error %}
+    {{ error_block(fieldname.errors) }}
+  {% endif %}
+  </div>
+{% endmacro %}
