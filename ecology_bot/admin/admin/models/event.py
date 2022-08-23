@@ -24,5 +24,6 @@ class EventModelView(SecureModelView):
         "description",
         "organization",
         "district",
+        "type",
         "volunteer_types",
     ]
