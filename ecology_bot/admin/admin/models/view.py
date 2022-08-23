@@ -13,3 +13,6 @@ class SecureModelView(ModelView):
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("login.index", next=request.endpoint))
+
+
+    

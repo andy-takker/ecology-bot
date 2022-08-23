@@ -37,6 +37,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="Регионы",
             endpoint="regions",
+            category='Данные',
         )
     )
     admin.add_view(
@@ -45,6 +46,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="Районы",
             endpoint="districts",
+            category='Данные',
         )
     )
     admin.add_view(
@@ -53,6 +55,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="Виды волонтерств",
             endpoint="volunteer_types",
+            category='Данные', 
         )
     )
     admin.add_view(
@@ -61,6 +64,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="Активности",
             endpoint="eco_activities",
+            category='Данные',
         )
     )
     admin.add_view(
@@ -69,6 +73,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="Организации",
             endpoint="organizations",
+            category='Данные',
         )
     )
     admin.add_view(
@@ -77,6 +82,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="События",
             endpoint="events",
+            category='Данные',
         )
     )
     admin.add_view(
@@ -85,6 +91,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name='Пользователи',
             endpoint='users',
+            category='Данные',
         )
     )
     admin.add_link(LoginLink(name="Login"))
