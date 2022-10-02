@@ -11,8 +11,8 @@ class DatabaseMiddleware(LifetimeControllerMiddleware):
 
     async def pre_process(self, obj, data, *args):
         session: AsyncSession = self.async_session_maker()
-        data["session"] = session
-        data["repo"] = Repo(session=session)
+        data['session'] = session
+        data['repo'] = Repo(session=session)
 
     async def post_process(self, obj, data, *args):
         del data['repo']

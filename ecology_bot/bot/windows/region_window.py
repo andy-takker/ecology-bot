@@ -7,6 +7,7 @@ from aiogram_dialog.widgets.kbd import Back, Cancel, ScrollingGroup, Select
 from aiogram_dialog.widgets.text import Const, Format
 
 from ecology_bot.bot.services.repo import Repo
+from ecology_bot.bot.utils.switch_to_button import GoTo
 
 
 def get_region_keyboard() -> ScrollingGroup:
@@ -44,11 +45,12 @@ CHOOSE_REGION_MESSAGE = "Выберите регион!"
 
 
 class RegionWindow(Window):
-    def __init__(self, state: State, prev: Type[Back | Cancel] = Back):
+    def __init__(self, state: State, not_region_state: State, prev: Type[Back | Cancel] = Back):
         regions = get_region_keyboard()
         super().__init__(
             Const(CHOOSE_REGION_MESSAGE),
             regions,
+            GoTo(text='Моего региона нет в списке', id='goto_not_regions', state=not_region_state),
             prev(text=Const('Назад')),
             getter=get_region_data,
             state=state,

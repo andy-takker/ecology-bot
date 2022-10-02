@@ -52,7 +52,7 @@ async def main():
         storage = RedisStorage2(
             host=settings.REDIS_HOST,
             port=int(settings.REDIS_PORT),
-            password=settings.REDIS_PASSWORD
+            password=settings.REDIS_PASSWORD,
         )
     bot = Bot(token=settings.TELEGRAM_BOT_TOKEN,parse_mode=ParseMode.HTML)
     dp = Dispatcher(bot, storage=storage)

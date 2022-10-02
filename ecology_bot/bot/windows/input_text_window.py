@@ -1,4 +1,4 @@
-from typing import Optional, Callable
+from typing import Any, Optional, Callable, Coroutine
 
 from aiogram.dispatcher.filters.state import State
 from aiogram.types import Message
@@ -10,13 +10,24 @@ from aiogram_dialog.widgets.text import Format
 from ecology_bot.bot.utils.switch_to_button import GoTo
 
 
+def default_handler(id):
+    async def input_handler(m: Message, dialog: Dialog, manager: DialogManager):
+        manager.current_context().dialog_data[id] = m.text
+        await dialog.next(manager)
+
+    return input_handler
+
+
 class InputTextWindow(Window):
 
-    def __init__(self, id: str, getter_text: Callable, state: State, get_prev_state: Optional[OnClick]):
-        async def input_handler(m: Message, dialog: Dialog, manager: DialogManager):
-            manager.current_context().dialog_data[id] = m.text
-            await dialog.next(manager)
-
+    def __init__(self, id: str,
+                 getter_text: Callable,
+                 state: State,
+                 get_prev_state: Optional[OnClick],
+                 handler: Coroutine = None,
+                 ):
+        if handler is None:
+            handler = default_handler(id)
         super().__init__(
             Format('{text}'),
             GoTo(
@@ -24,7 +35,7 @@ class InputTextWindow(Window):
                 id='switch_to_btn',
                 state=get_prev_state,
             ),
-            MessageInput(input_handler),
+            MessageInput(handler),
             getter=getter_text,
             state=state,
         )

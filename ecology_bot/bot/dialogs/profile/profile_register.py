@@ -9,6 +9,7 @@ from ecology_bot.bot.services.repo import Repo
 from ecology_bot.bot.windows.activity_window import ActivityWindow
 from ecology_bot.bot.windows.confirm_window import ConfirmWindow
 from ecology_bot.bot.windows.district_window import DistrictWindow
+from ecology_bot.bot.windows.input_text_window import InputTextWindow
 from ecology_bot.bot.windows.region_window import RegionWindow
 
 
@@ -33,8 +34,23 @@ async def complete_registration(c: CallbackQuery, widget: Any, dialog_manager: D
     dialog_manager.show_mode = ShowMode.EDIT
 
 
+async def get_not_region_text(dialog_manager: DialogManager, **kwargs):
+    return {
+        'text': 'Введите название вашего региона',
+    }
+
+
+async def get_not_region_prev_state(c: CallbackQuery, widget: Any, manager: DialogManager):
+    return RegisterProfileSG.region
+
+
 def get_dialog() -> Dialog:
-    region_window = RegionWindow(state=RegisterProfileSG.region, prev=Cancel)
+    region_window = RegionWindow(state=RegisterProfileSG.region, prev=Cancel,
+                                 not_region_state=RegisterProfileSG.not_region)
+    not_region_window = InputTextWindow(id='new_region',
+                                        getter_text=get_not_region_text,
+                                        state=RegisterProfileSG.not_region,
+                                        get_prev_state=get_not_region_prev_state)
     district_window = DistrictWindow(state=RegisterProfileSG.district)
     activity_window = ActivityWindow(state=RegisterProfileSG.activity, prev=Back)
     confirm_window = ConfirmWindow(
@@ -44,6 +60,7 @@ def get_dialog() -> Dialog:
     )
     profile_register = Dialog(
         region_window,
+        not_region_window,
         district_window,
         activity_window,
         confirm_window,

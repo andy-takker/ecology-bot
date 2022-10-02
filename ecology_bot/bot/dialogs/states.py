@@ -9,6 +9,7 @@ class MainSG(StatesGroup):
 
 class RegisterProfileSG(StatesGroup):
     region = State()
+    not_region = State()
     district = State()
     activity = State()
     confirm = State()
@@ -37,6 +38,7 @@ class ProfileDeleteSG(StatesGroup):
 class RegisterOrganizationSG(StatesGroup):
     activity = State()
     region = State()
+    not_region = State()
     district = State()
     name = State()
     confirm = State()

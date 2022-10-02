@@ -22,7 +22,7 @@ from ecology_bot.database.models import Employee
 
 logger = logging.getLogger(__name__)
 
-alphabet = digits + ascii_lowercase + "_"
+alphabet = digits + ascii_lowercase + '_'
 
 db = get_admin_db()
 

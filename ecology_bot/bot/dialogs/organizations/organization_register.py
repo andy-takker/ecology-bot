@@ -53,7 +53,8 @@ async def confirm_data(dialog_manager: DialogManager, **kwargs) -> dict:
 
 def get_dialog() -> Dialog:
     activity_window = ActivityWindow(state=RegisterOrganizationSG.activity)
-    region_window = RegionWindow(state=RegisterOrganizationSG.region)
+    region_window = RegionWindow(state=RegisterOrganizationSG.region,
+                                 not_region_state=RegisterOrganizationSG.not_region)
     district_window = DistrictWindow(state=RegisterOrganizationSG.district)
     name_window = get_name_window()
     confirm_window = ConfirmWindow(

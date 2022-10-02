@@ -2,15 +2,13 @@ from typing import Any
 
 from aiogram.types import CallbackQuery
 from aiogram_dialog import Dialog, Window, DialogManager, Data
-from aiogram_dialog.widgets.kbd import Button, Start, Next, Back, SwitchTo, Select, Column, Group
+from aiogram_dialog.widgets.kbd import Button, Back, SwitchTo, Select, Column, Group, Start, Next
 from aiogram_dialog.widgets.text import Const, Format
 from loguru import logger
 
 from ecology_bot.bot.dialogs.states import MainSG, RegisterProfileSG, RegisterOrganizationSG, ProfileManagementSG, \
     OrganizationManagementSG
 from ecology_bot.bot.services.repo import Repo
-
-help_text = 'asfasdfasdf'
 
 ONBOARDING_MESSAGE = (
     "Привет!\n"
@@ -44,6 +42,10 @@ def has_profile(data: dict, whenable: Any, manager: DialogManager):
     return data['dialog_data'].get('has_profile', False)
 
 
+def has_on_startup_messages(data: dict, whenable: Any, manager: DialogManager):
+    return bool(data['dialog_data'].get('texts'))
+
+
 def has_unchecked_org(data: dict, whenable: Any, manager: DialogManager):
     return data['dialog_data'].get('has_unchecked_org', True)
 
@@ -59,6 +61,14 @@ async def get_org_data(dialog_manager: DialogManager, **kwargs):
             telegram_id=dialog_manager.event.from_user.id,
             is_checked=True,
         )
+    }
+
+
+async def get_window_data(dialog_manager: DialogManager, **kwargs) -> dict:
+    repo = dialog_manager.data['repo']
+    texts = '\n'.join(await repo.text_chunk_dao.get_by_key(key='on_startup_messages'))
+    return {
+        "texts": texts,
     }
 
 
@@ -86,12 +96,7 @@ async def on_start(self, manager: DialogManager):
     dialog_data['has_unchecked_org'] = bool(unchecked_orgs)
     checked_orgs = await repo.organization_dao.get_organizations_by_creator(telegram_id=telegram_id, is_checked=True)
     dialog_data['has_checked_org'] = bool(checked_orgs)
-
-
-async def show_help(c: CallbackQuery, button: Button, manager: DialogManager):
-    text = c.message.text
-    if text != help_text:
-        await c.message.edit_text(text=help_text, reply_markup=c.message.reply_markup)
+    dialog_data['texts'] = '\n'.join(await repo.text_chunk_dao.get_by_key(key='on_startup_messages'))
 
 
 def get_help_window() -> Window:
@@ -136,6 +141,7 @@ def get_main_menu_window() -> Window:
     return Window(
         Const('С возвращением', when=is_known_user),
         Const(ONBOARDING_MESSAGE, when=lambda d, w, m: not is_known_user(d, w, m)),
+        Format('\n{texts}', when=lambda d, w, n: has_on_startup_messages(d, w, n)),
         Start(
             text=Const('Зарегистрировать профиль волонтера'),
             id='register_volunteer_profile',
@@ -162,6 +168,7 @@ def get_main_menu_window() -> Window:
             when=has_checked_org,
         ),
         state=MainSG.main,
+        getter=get_window_data,
     )
 
 

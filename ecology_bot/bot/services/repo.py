@@ -1,7 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ecology_bot.bot.services.dao import ActivityDAO, RegionDAO, \
-    DistrictDAO, OrganizationDAO, UserDAO, VolunteerTypeDAO, EventDAO
+    DistrictDAO, OrganizationDAO, UserDAO, VolunteerTypeDAO, EventDAO, \
+    TextChunkDAO
 
 
 class Repo:
@@ -14,3 +15,4 @@ class Repo:
         self.organization_dao = OrganizationDAO(session=session)
         self.user_dao = UserDAO(session=session)
         self.volunteer_type_dao = VolunteerTypeDAO(session=session)
+        self.text_chunk_dao = TextChunkDAO(session=session)

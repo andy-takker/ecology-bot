@@ -33,6 +33,7 @@ black = "^22.6.0"
 [tool.poetry.scripts]
 bot = "ecology_bot.bot.main:start"
 admin = "ecology_bot.admin.wsgi:app"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

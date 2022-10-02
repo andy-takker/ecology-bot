@@ -9,7 +9,8 @@ from sqlalchemy import (
     String,
     Boolean,
     DateTime,
-    Integer,
+    Integer, UniqueConstraint,
+    text as sa_text,
 )
 from sqlalchemy.future import select
 from sqlalchemy.orm import relationship, backref, selectinload, Query
@@ -457,3 +458,27 @@ class Employee(Base, PkMixin, TimestampMixin, UserMixin):
     def set_password(self: "Employee", password: str) -> None:
         """Назначает пароль сотруднику."""
         self.password_hash = generate_password_hash(password)
+
+
+class TextChunk(Base, PkMixin, TimestampMixin):
+    __table_args__ = (
+        UniqueConstraint('key', 'weight', name='_key_weight_uc'),
+    )
+    key = Column(String(64), nullable=False)
+    description = Column(String(512), nullable=False, default='')
+    text = Column(String, nullable=False, default='')
+    weight = Column(Integer, nullable=False, default=0, server_default=sa_text('0'))
+
+    def __repr__(self):
+        return f'TextChunk ({self.id} {self.key})'
+
+    def __str__(self: "TextChunk"):
+        return f'Text: {self.text}'
+
+
+class AwesomeData(Base, PkMixin, TimestampMixin):
+    description = Column(String(512), nullable=False, default='')
+    data = Column(String, nullable=False)
+
+    def __repr__(self):
+        return f'AwesomeData: ({self.id})'
