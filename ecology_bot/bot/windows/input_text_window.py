@@ -1,4 +1,4 @@
-from typing import Any, Optional, Callable, Coroutine
+from typing import Any, Optional, Callable, Coroutine, Awaitable
 
 from aiogram.dispatcher.filters.state import State
 from aiogram.types import Message
@@ -10,7 +10,7 @@ from aiogram_dialog.widgets.text import Format
 from ecology_bot.bot.utils.switch_to_button import GoTo
 
 
-def default_handler(id):
+def default_handler(id) -> Awaitable:
     async def input_handler(m: Message, dialog: Dialog, manager: DialogManager):
         manager.current_context().dialog_data[id] = m.text
         await dialog.next(manager)

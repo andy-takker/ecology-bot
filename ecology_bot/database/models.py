@@ -21,19 +21,21 @@ from ecology_bot.database.base import Base
 from ecology_bot.database.mixins import PkMixin, TimestampMixin
 
 __all__ = [
-    "EventType",
-    "DistrictType",
     "Activity",
     "ActivityEvent",
     "ActivityOrganization",
     "ActivityProfile",
+    "AwesomeData",
     "District",
+    "DistrictType",
     "Employee",
     "Event",
+    "EventType",
     "Mailing",
     "Organization",
     "Profile",
     "Region",
+    "TextChunk",
     "User",
     "VolunteerType",
     "VolunteerTypeEvent",
@@ -477,6 +479,7 @@ class TextChunk(Base, PkMixin, TimestampMixin):
 
 
 class AwesomeData(Base, PkMixin, TimestampMixin):
+    from_user_id = Column(BigInteger, nullable=True)
     description = Column(String(512), nullable=False, default='')
     data = Column(String, nullable=False)
 

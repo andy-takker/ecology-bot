@@ -27,13 +27,8 @@ services:
 
   admin:
     container_name: 'bot_admin'
-    build:
-      context: .
-      dockerfile: ./docker/bot/Dockerfile
-    depends_on:
-      - database
-    restart: on-failure
-    command: poetry run gunicorn -c ecology_bot/admin/gunicorn_conf.py ecology_bot.admin.wsgi:app
+    image: bot
+    command: python3 -m poetry run gunicorn -c ecology_bot/admin/gunicorn_conf.py ecology_bot.admin.wsgi:app
     environment:
       DEBUG: ${DEBUG}
 
@@ -66,7 +61,7 @@ services:
       - database
       - redis
       - worker
-    command: poetry run bot
+    command: python3 -m poetry run bot
     restart: on-failure
     build:
       context: .

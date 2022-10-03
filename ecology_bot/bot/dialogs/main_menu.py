@@ -64,16 +64,21 @@ async def get_org_data(dialog_manager: DialogManager, **kwargs):
     }
 
 
+async def get_help_data(dialog_manager: DialogManager, **kwargs) -> dict:
+    repo = dialog_manager.data['repo']
+    help_text = '\n'.join(await repo.text_chunk_dao.get_by_key(key='help_text'))
+    return dict(help_text=help_text)
+
+
 async def get_window_data(dialog_manager: DialogManager, **kwargs) -> dict:
     repo = dialog_manager.data['repo']
-    texts = '\n'.join(await repo.text_chunk_dao.get_by_key(key='on_startup_messages'))
+    texts = '\n'.join(await repo.text_chunk_dao.get_by_key(key='start_text'))
     return {
         "texts": texts,
     }
 
 
 async def process_result(start_data: Data, result: Any, manager: DialogManager):
-    logger.info(start_data)
     await on_start(None, manager)
 
 
@@ -101,9 +106,10 @@ async def on_start(self, manager: DialogManager):
 
 def get_help_window() -> Window:
     return Window(
-        Const(HELP_MESSAGE),
+        Format("{help_text}"),
         Back(Const('Назад')),
         state=MainSG.help,
+        getter=get_help_data,
     )
 
 

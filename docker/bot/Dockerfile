@@ -4,11 +4,13 @@ RUN apt update && apt install -y --no-install-recommends build-essential wget un
 ENV TZ="Europe/Moscow"
 RUN python3 -m pip install -U pip
 
-RUN python3 -m pip install 'poetry==1.1.14'
+RUN python3 -m pip install poetry
 
 WORKDIR /bot
 
-COPY poetry.lock pyproject.toml alembic.ini ./
+COPY poetry.lock pyproject.toml alembic.ini /bot/
+RUN poetry config virtualenvs.create false --local
+
 
 RUN poetry install
 

@@ -1,8 +1,8 @@
 from typing import Type, Any
 
 from aiogram.dispatcher.filters.state import State
-from aiogram.types import CallbackQuery
-from aiogram_dialog import Window, DialogManager
+from aiogram.types import CallbackQuery, Message
+from aiogram_dialog import Window, DialogManager, Dialog
 from aiogram_dialog.widgets.kbd import Cancel, Back, ScrollingGroup, Select
 from aiogram_dialog.widgets.text import Const, Format
 

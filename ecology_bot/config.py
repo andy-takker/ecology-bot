@@ -33,7 +33,7 @@ class DefaultSettings(BaseSettings):
     TELEGRAM_BOT_ADMINS: List[int] = Field(default=[292990139])
 
     REDIS_HOST: str = Field(default='127.0.0.1')
-    REDIS_PORT: str = Field(default='6379')
+    REDIS_PORT: int = Field(default=6379)
     REDIS_PASSWORD: str = Field(default='redis_password')
 
     REDIS_URI: Optional[RedisDsn] = None
@@ -45,7 +45,7 @@ class DefaultSettings(BaseSettings):
         return RedisDsn.build(
             scheme="redis",
             host=values.get("REDIS_HOST"),
-            port=values.get("REDIS_PORT"),
+            port=str(values.get("REDIS_PORT")),
             password=values.get("REDIS_PASSWORD"),
             path="/1",
         )

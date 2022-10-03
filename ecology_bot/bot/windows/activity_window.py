@@ -3,7 +3,7 @@ from typing import Any, Type
 from aiogram.dispatcher.filters.state import State
 from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager, Window
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Multiselect, Next, Cancel, Back, Select
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Multiselect, Next, Cancel, Back
 from aiogram_dialog.widgets.text import Format, Const
 
 from ecology_bot.bot.services.repo import Repo

@@ -2,7 +2,7 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.contrib.fsm_storage.redis import RedisStorage, RedisStorage2
+from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.types import ParseMode
 from aiogram_dialog import DialogRegistry
 from loguru import logger
@@ -51,10 +51,10 @@ async def main():
     else:
         storage = RedisStorage2(
             host=settings.REDIS_HOST,
-            port=int(settings.REDIS_PORT),
+            port=settings.REDIS_PORT,
             password=settings.REDIS_PASSWORD,
         )
-    bot = Bot(token=settings.TELEGRAM_BOT_TOKEN,parse_mode=ParseMode.HTML)
+    bot = Bot(token=settings.TELEGRAM_BOT_TOKEN, parse_mode=ParseMode.HTML)
     dp = Dispatcher(bot, storage=storage)
     dp.middleware.setup(DatabaseMiddleware(async_session_maker=async_session_maker))
     registry = DialogRegistry(dp)

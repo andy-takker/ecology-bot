@@ -6,11 +6,13 @@ from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Back, Button, ScrollingGroup, Multiselect, Cancel, Next, Select, Row
 from aiogram_dialog.widgets.text import Const, Format
 
+from ecology_bot.bot.dialogs.profile.profile_register import input_handler, get_not_region_text
 from ecology_bot.bot.dialogs.states import RegisterOrganizationSG
 from ecology_bot.bot.services.repo import Repo
 from ecology_bot.bot.windows.activity_window import ActivityWindow
 from ecology_bot.bot.windows.confirm_window import ConfirmWindow
 from ecology_bot.bot.windows.district_window import DistrictWindow
+from ecology_bot.bot.windows.input_text_window import InputTextWindow
 from ecology_bot.bot.windows.region_window import RegionWindow
 
 
@@ -50,11 +52,20 @@ async def confirm_data(dialog_manager: DialogManager, **kwargs) -> dict:
         "name": dialog_manager.current_context().dialog_data['name'],
     }
 
+async def get_not_region_prev_state(c: CallbackQuery, widget: Any, manager: DialogManager):
+    return RegisterOrganizationSG.region
 
 def get_dialog() -> Dialog:
     activity_window = ActivityWindow(state=RegisterOrganizationSG.activity)
     region_window = RegionWindow(state=RegisterOrganizationSG.region,
                                  not_region_state=RegisterOrganizationSG.not_region)
+    not_region_window = InputTextWindow(
+        id='new_region',
+        getter_text=get_not_region_text,
+        state=RegisterOrganizationSG.not_region,
+        get_prev_state=get_not_region_prev_state,
+        handler=input_handler,
+    )
     district_window = DistrictWindow(state=RegisterOrganizationSG.district)
     name_window = get_name_window()
     confirm_window = ConfirmWindow(
@@ -66,6 +77,7 @@ def get_dialog() -> Dialog:
     dialog = Dialog(
         activity_window,
         region_window,
+        not_region_window,
         district_window,
         name_window,
         confirm_window,

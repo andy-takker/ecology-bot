@@ -1,6 +1,6 @@
 from typing import Any
 
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import Dialog, DialogManager, ShowMode
 from aiogram_dialog.widgets.kbd import Cancel, Back
 
@@ -44,13 +44,30 @@ async def get_not_region_prev_state(c: CallbackQuery, widget: Any, manager: Dial
     return RegisterProfileSG.region
 
 
+async def input_handler(m: Message, dialog: Dialog, manager: DialogManager):
+    manager.current_context().dialog_data['new_region'] = m.text
+    repo: Repo = manager.data['repo']
+    await repo.awesome_data_dao.save_data(
+        data=m.text,
+        description='New region'
+    )
+    await m.answer(
+        'Ваш ответ записан!')
+    manager.show_mode = ShowMode.SEND
+    await manager.done()
+    manager.show_mode = ShowMode.EDIT
+
+
 def get_dialog() -> Dialog:
     region_window = RegionWindow(state=RegisterProfileSG.region, prev=Cancel,
                                  not_region_state=RegisterProfileSG.not_region)
-    not_region_window = InputTextWindow(id='new_region',
-                                        getter_text=get_not_region_text,
-                                        state=RegisterProfileSG.not_region,
-                                        get_prev_state=get_not_region_prev_state)
+    not_region_window = InputTextWindow(
+        id='new_region',
+        getter_text=get_not_region_text,
+        state=RegisterProfileSG.not_region,
+        get_prev_state=get_not_region_prev_state,
+        handler=input_handler,
+    )
     district_window = DistrictWindow(state=RegisterProfileSG.district)
     activity_window = ActivityWindow(state=RegisterProfileSG.activity, prev=Back)
     confirm_window = ConfirmWindow(
