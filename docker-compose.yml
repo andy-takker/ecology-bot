@@ -22,8 +22,6 @@ services:
     command: "redis-server --requirepass ${REDIS_PASSWORD:-password}"
     ports:
       - "${REDIS_PORT:-6379}:6379"
-    volumes:
-      - redis_data:/data
 
   admin:
     container_name: 'bot_admin'
