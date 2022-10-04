@@ -73,6 +73,7 @@ async def get_help_data(dialog_manager: DialogManager, **kwargs) -> dict:
 async def get_window_data(dialog_manager: DialogManager, **kwargs) -> dict:
     repo = dialog_manager.data['repo']
     texts = '\n'.join(await repo.text_chunk_dao.get_by_key(key='start_text'))
+    dialog_manager.data['texts'] = True
     return {
         "texts": texts,
     }
