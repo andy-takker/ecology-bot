@@ -1,6 +1,6 @@
 import asyncio
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.types import ParseMode
@@ -57,6 +57,14 @@ async def main():
     bot = Bot(token=settings.TELEGRAM_BOT_TOKEN, parse_mode=ParseMode.HTML)
     dp = Dispatcher(bot, storage=storage)
     dp.middleware.setup(DatabaseMiddleware(async_session_maker=async_session_maker))
+
+    @dp.errors_handler()
+    async def errors_handler(update: types.Update, exception: Exception):
+        try:
+            raise exception
+        except Exception as e:
+            logger.exception("Cause exception {e} in update {update}", e=e, update=update)
+        return True
     registry = DialogRegistry(dp)
     register_dialogs(registry=registry)
 
