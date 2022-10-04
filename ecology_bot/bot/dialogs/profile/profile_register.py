@@ -49,7 +49,8 @@ async def input_handler(m: Message, dialog: Dialog, manager: DialogManager):
     repo: Repo = manager.data['repo']
     await repo.awesome_data_dao.save_data(
         data=m.text,
-        description='New region'
+        description='New region',
+        from_user_id=m.from_user.id,
     )
     await m.answer(
         'Ваш ответ записан!')

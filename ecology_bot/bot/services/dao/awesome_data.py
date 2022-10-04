@@ -4,9 +4,10 @@ from ecology_bot.database.models import AwesomeData
 
 class AwesomeDataDAO(DAO):
 
-    async def save_data(self, data: str, description: str) -> None:
+    async def save_data(self, data: str, description: str, from_user_id: None | int = None) -> None:
         async with self.session:
             awesome_data = AwesomeData(
+                from_user_id=from_user_id,
                 description=description,
                 data=data,
             )

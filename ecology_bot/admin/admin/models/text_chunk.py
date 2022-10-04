@@ -17,7 +17,7 @@ def validate_key(form, field: Field):
             raise ValidationError(KEY_NAME_ERROR)
 
 
-class TextChunk(SecureModelView):
+class TextChunkModelView(SecureModelView):
     column_list = ['created_at', 'key', 'weight', 'description']
     column_default_sort = [('key', True), ('weight', True)]
 

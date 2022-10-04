@@ -2,11 +2,13 @@ from flask import Flask
 from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
 
+from ecology_bot.admin.admin.models.awesome_data import AwesomeDataModelView
 from ecology_bot.admin.admin.models.district import DistrictModelView
 from ecology_bot.admin.admin.models.eco_activity import EcoActivityModelView
 from ecology_bot.admin.admin.models.event import EventModelView
 from ecology_bot.admin.admin.models.organization import OrganizationModelView
 from ecology_bot.admin.admin.models.region import RegionModelView
+from ecology_bot.admin.admin.models.text_chunk import TextChunkModelView
 from ecology_bot.admin.admin.models.volunteer_type import VolunteerTypeModelView
 from ecology_bot.admin.admin.models.user import UserModelView
 from ecology_bot.admin.admin.pages.auth import LoginLink, LogoutLink, LoginView
@@ -17,7 +19,7 @@ from ecology_bot.database.models import (
     Activity,
     Organization,
     Event, Region,
-    User,
+    User, TextChunk, AwesomeData,
 )
 
 
@@ -91,6 +93,24 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name='Пользователи',
             endpoint='users',
+            category='Данные',
+        )
+    )
+    admin.add_view(
+        TextChunkModelView(
+            model=TextChunk,
+            session=database.session,
+            name='Тексты бота',
+            endpoint='text_chunks',
+            category='Данные',
+        )
+    )
+    admin.add_view(
+        AwesomeDataModelView(
+            model=AwesomeData,
+            session=database.session,
+            name='Данные от пользователей',
+            endpoint='awesome_data',
             category='Данные',
         )
     )
