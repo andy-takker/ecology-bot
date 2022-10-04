@@ -102,7 +102,7 @@ async def on_start(self, manager: DialogManager):
     dialog_data['has_unchecked_org'] = bool(unchecked_orgs)
     checked_orgs = await repo.organization_dao.get_organizations_by_creator(telegram_id=telegram_id, is_checked=True)
     dialog_data['has_checked_org'] = bool(checked_orgs)
-    dialog_data['texts'] = '\n'.join(await repo.text_chunk_dao.get_by_key(key='on_startup_messages'))
+    dialog_data['texts'] = '\n'.join(await repo.text_chunk_dao.get_by_key(key='start_text'))
 
 
 def get_help_window() -> Window:
