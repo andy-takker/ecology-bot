@@ -8,7 +8,7 @@ RUN python3 -m pip install poetry
 
 WORKDIR /bot
 
-COPY poetry.lock pyproject.toml alembic.ini /bot/
+COPY pyproject.toml alembic.ini /bot/
 RUN poetry config virtualenvs.create false --local
 
 
