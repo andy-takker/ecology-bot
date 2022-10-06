@@ -11,10 +11,13 @@ from aiogram_dialog.widgets.when import WhenCondition
 
 
 class GoTo(EventProcessorButton):
-    def __init__(self, text: str, id: str,
-                 state: OnClick | State,
-                 when: WhenCondition = None,
-                 ):
+    def __init__(
+        self,
+        text: str,
+        id: str,
+        state: OnClick | State,
+        when: WhenCondition = None,
+    ):
         self.state = state
         super().__init__(
             id=id,
@@ -25,6 +28,6 @@ class GoTo(EventProcessorButton):
 
     async def _on_click(self, c: CallbackQuery, button: Button, manager: DialogManager):
         state = self.state
-        if not isinstance(self.state,State):
+        if not isinstance(self.state, State):
             state = await self.state(c, self, manager)
         await manager.dialog().switch_to(state)

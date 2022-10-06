@@ -34,6 +34,10 @@
 {% block body %}
   {{ super() }}
 {% endblock %}
+{% block tail_js %}
+    {{ super() }}
+    <script src="https://cdn.ckeditor.com/4.6.0/standard/ckeditor.js"></script>
+{% endblock %}
 {% block tail %}
   {{ super() }}
 {% endblock %}

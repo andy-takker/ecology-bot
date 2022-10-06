@@ -1,11 +1,11 @@
-from ecology_bot.admin.admin.models.view import SecureModelView
+from ecology_bot.admin.admin.view import SecureModelView
 
 
 class RegionModelView(SecureModelView):
-    column_list = ['name']
+    column_list = ["name"]
 
     column_labels = {
-        'name': 'Название',
+        "name": "Название",
     }
-    column_searchable_list = ['name']
-    column_sortable_list = ['name']
+    column_searchable_list = ["name"]
+    column_sortable_list = ["name"]

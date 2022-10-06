@@ -25,6 +25,10 @@ loguru = "^0.6.0"
 celery = "^5.2.7"
 aioredis = "^2.0.1"
 redis = "^4.3.4"
+aiocache = {extras = ["redis"], version = "^0.11.1"}
+ujson = "^5.5.0"
+msgpack = "^1.0.4"
+black = "^22.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"

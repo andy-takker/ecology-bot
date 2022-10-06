@@ -9,7 +9,8 @@ from sqlalchemy import (
     String,
     Boolean,
     DateTime,
-    Integer, UniqueConstraint,
+    Integer,
+    UniqueConstraint,
     text as sa_text,
 )
 from sqlalchemy.future import select
@@ -60,6 +61,10 @@ class DistrictType(enum.Enum):
 class Activity(PkMixin, Base):
     """Экологические активности"""
 
+    __verbose_name__ = "Активность"
+    __verbose_name_plural__ = "Активности"
+    __admin_endpoint__ = "eco_activities"
+
     name = Column(String, unique=True, nullable=False, index=True)
 
     organizations = relationship(
@@ -82,15 +87,25 @@ class Activity(PkMixin, Base):
 class Region(PkMixin, Base):
     """Регион"""
 
+    __verbose_name__ = "Регион"
+    __verbose_name_plural__ = "Регионы"
+    __admin_endpoint__ = "regions"
+
     name = Column(String(255), unique=True, nullable=False, index=True)
-    profiles = relationship('Profile', back_populates='region')
-    districts = relationship('District', back_populates='region')
+    profiles = relationship("Profile", back_populates="region")
+    districts = relationship("District", back_populates="region")
 
     def __str__(self):
         return self.name
 
 
 class District(PkMixin, Base):
+    """Район"""
+
+    __verbose_name__ = "Район"
+    __verbose_name_plural__ = "Районы"
+    __admin_endpoint__ = "districts"
+
     name = Column(String(255), unique=False, nullable=False, index=True)
     type = Column(
         ChoiceType(DistrictType, impl=String(255)),
@@ -111,9 +126,7 @@ class District(PkMixin, Base):
         cascade="all, delete",
     )
     profiles = relationship("Profile", back_populates="district")
-    organization = relationship(
-        "Organization", back_populates="district"
-    )
+    organization = relationship("Organization", back_populates="district")
     events = relationship("Event", back_populates="district")
     region = relationship("Region", back_populates="districts")
 
@@ -123,6 +136,10 @@ class District(PkMixin, Base):
 
 class User(PkMixin, TimestampMixin, Base):
     """Пользователи"""
+
+    __verbose_name__ = "Пользователь"
+    __verbose_name_plural__ = "Пользователи"
+    __admin_endpoint__ = "users"
 
     telegram_id = Column(BigInteger, unique=True, nullable=False, index=True)
     is_admin = Column(Boolean, default=False)
@@ -147,14 +164,25 @@ class User(PkMixin, TimestampMixin, Base):
 
 
 class Profile(PkMixin, TimestampMixin, Base):
-    """Профиль пользователя"""
+    """Профиль волонтера"""
+
+    __verbose_name__ = "Профиль волонтера"
+    __verbose_name_plural__ = "Профили волонтеров"
+    __admin_endpoint__ = "profiles"
 
     user_id = Column(
-        BigInteger, ForeignKey("user.id"), index=True, nullable=False, unique=True
+        BigInteger,
+        ForeignKey("user.id"),
+        index=True,
+        nullable=False,
+        unique=True,
     )
 
     district_id = Column(
-        BigInteger, ForeignKey("district.id"), index=True, nullable=False
+        BigInteger,
+        ForeignKey("district.id"),
+        index=True,
+        nullable=False,
     )
     region_id = Column(ForeignKey("region.id"), index=True, nullable=False)
 
@@ -163,7 +191,7 @@ class Profile(PkMixin, TimestampMixin, Base):
     age = Column(Integer, nullable=True)
 
     user = relationship("User", back_populates="profile", uselist=False)
-    region = relationship('Region', back_populates='profiles')
+    region = relationship("Region", back_populates="profiles")
 
     activities = relationship(
         "Activity",
@@ -184,9 +212,11 @@ class Profile(PkMixin, TimestampMixin, Base):
     @property
     def info(self: "Profile") -> str:
         activities = ", ".join(e.name for e in self.activities)
-        msg = f"Регион: {self.region}\n" \
-              f"Район: {self.district}\n\n" \
-              f"Активности: \n{activities}"
+        msg = (
+            f"Регион: {self.region}\n"
+            f"Район: {self.district}\n\n"
+            f"Активности: \n{activities}"
+        )
         if self.is_event_organizer:
             volunteer_types = ", ".join(v.name for v in self.volunteer_types)
             msg += (
@@ -211,8 +241,14 @@ class Profile(PkMixin, TimestampMixin, Base):
 class Organization(PkMixin, TimestampMixin, Base):
     """Организации."""
 
+    __verbose_name__ = "Организация"
+    __verbose_name_plural__ = "Организации"
+    __admin_endpoint__ = "organizations"
+
     creator_id = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
-    district_id = Column(BigInteger, ForeignKey('district.id'), index=True, nullable=False)
+    district_id = Column(
+        BigInteger, ForeignKey("district.id"), index=True, nullable=False
+    )
     name = Column(String, index=True)
     is_checked = Column(Boolean, default=False)
     is_superorganization = Column(Boolean, default=False)
@@ -224,7 +260,7 @@ class Organization(PkMixin, TimestampMixin, Base):
         back_populates="organizations",
         cascade="all, delete",
     )
-    district = relationship('District', back_populates='organization')
+    district = relationship("District", back_populates="organization")
     events = relationship("Event", back_populates="organization")
 
     def __str__(self: "Organization") -> str:
@@ -252,6 +288,10 @@ class Organization(PkMixin, TimestampMixin, Base):
 
 class VolunteerType(PkMixin, Base):
     """Виды волонтерской помощи."""
+
+    __verbose_name__ = "Вид волонтерской помощи"
+    __verbose_name_plural__ = "Виды волонтерской помощи"
+    __admin_endpoint__ = "volunteer_types"
 
     name = Column(String, index=True)
 
@@ -282,14 +322,18 @@ class ActivityOrganization(PkMixin, Base):
     )
     organization_id = Column(
         BigInteger,
-        ForeignKey("organization.id", ondelete='CASCADE'),
+        ForeignKey("organization.id", ondelete="CASCADE"),
         index=True,
         nullable=False,
     )
 
 
 class Event(PkMixin, TimestampMixin, Base):
-    """Событие."""
+    """Событие"""
+
+    __verbose_name__ = "Событие"
+    __verbose_name_plural__ = "События"
+    __admin_endpoint__ = "events"
 
     name = Column(String, index=True, nullable=False)
     description = Column(String, nullable=False)
@@ -371,7 +415,7 @@ class VolunteerTypeEvent(PkMixin, Base):
     )
     event_id = Column(
         BigInteger,
-        ForeignKey("event.id", ondelete='CASCADE'),
+        ForeignKey("event.id", ondelete="CASCADE"),
         index=True,
         nullable=False,
     )
@@ -405,7 +449,7 @@ class ActivityEvent(PkMixin, Base):
     )
     event_id = Column(
         BigInteger,
-        ForeignKey("event.id", ondelete='CASCADE'),
+        ForeignKey("event.id", ondelete="CASCADE"),
         index=True,
         nullable=False,
     )
@@ -413,6 +457,9 @@ class ActivityEvent(PkMixin, Base):
 
 class Mailing(PkMixin, TimestampMixin, Base):
     """Рассылка."""
+
+    __verbose_name__ = "Рассылка"
+    __verbose_name_plural__ = "Рассылки"
 
     is_executed = Column(Boolean, index=True, default=False)
     start_execute_datetime = Column(DateTime, nullable=True, index=True)
@@ -446,6 +493,9 @@ class ActivityProfile(PkMixin, Base):
 class Employee(Base, PkMixin, TimestampMixin, UserMixin):
     """Сотрудник админки."""
 
+    __verbose_name__ = "Аккаунт сотрудника"
+    __verbose_name_plural__ = "Аккаунты сотрудников"
+
     login = Column(String(30), unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
 
@@ -463,25 +513,30 @@ class Employee(Base, PkMixin, TimestampMixin, UserMixin):
 
 
 class TextChunk(Base, PkMixin, TimestampMixin):
-    __table_args__ = (
-        UniqueConstraint('key', 'weight', name='_key_weight_uc'),
-    )
+    __verbose_name__ = "Текст сообщения"
+    __verbose_name_plural__ = "Тексты сообщений"
+    __admin_endpoint__ = "text_chunks"
+    __table_args__ = (UniqueConstraint("key", "weight", name="_key_weight_uc"),)
     key = Column(String(64), nullable=False)
-    description = Column(String(512), nullable=False, default='')
-    text = Column(String, nullable=False, default='')
-    weight = Column(Integer, nullable=False, default=0, server_default=sa_text('0'))
+    description = Column(String(512), nullable=False, default="")
+    text = Column(String, nullable=False, default="")
+    weight = Column(Integer, nullable=False, default=0, server_default=sa_text("0"))
 
     def __repr__(self):
-        return f'TextChunk ({self.id} {self.key})'
+        return f"TextChunk ({self.id} {self.key})"
 
     def __str__(self: "TextChunk"):
-        return f'Text: {self.text}'
+        return f"Text: {self.text}"
 
 
 class AwesomeData(Base, PkMixin, TimestampMixin):
+    __verbose_name__ = "Данные от пользователя"
+    __verbose_name_plural__ = "Данные от пользователя"
+    __admin_endpoint__ = "awesome_data"
+
     from_user_id = Column(BigInteger, nullable=True)
-    description = Column(String(512), nullable=False, default='')
+    description = Column(String(512), nullable=False, default="")
     data = Column(String, nullable=False)
 
     def __repr__(self):
-        return f'AwesomeData: ({self.id})'
+        return f"AwesomeData: ({self.id})"

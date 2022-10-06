@@ -3,10 +3,22 @@ from typing import Any
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import Dialog, Window, DialogManager, ShowMode
 from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.kbd import Back, Button, ScrollingGroup, Multiselect, Cancel, Next, Select, Row
+from aiogram_dialog.widgets.kbd import (
+    Back,
+    Button,
+    ScrollingGroup,
+    Multiselect,
+    Cancel,
+    Next,
+    Select,
+    Row,
+)
 from aiogram_dialog.widgets.text import Const, Format
 
-from ecology_bot.bot.dialogs.profile.profile_register import input_handler, get_not_region_text
+from ecology_bot.bot.dialogs.profile.profile_register import (
+    input_handler,
+    get_not_region_text,
+)
 from ecology_bot.bot.dialogs.states import RegisterOrganizationSG
 from ecology_bot.bot.services.repo import Repo
 from ecology_bot.bot.windows.activity_window import ActivityWindow
@@ -23,8 +35,8 @@ async def name_handler(m: Message, dialog: Dialog, manager: DialogManager):
 
 def get_name_window():
     return Window(
-        Const('Введите название организации'),
-        Back(text=Const('Назад')),
+        Const("Введите название организации"),
+        Back(text=Const("Назад")),
         MessageInput(name_handler),
         state=RegisterOrganizationSG.name,
     )
@@ -32,16 +44,18 @@ def get_name_window():
 
 async def on_finish(c: CallbackQuery, button: Button, manager: DialogManager):
     data = manager.current_context().dialog_data
-    repo: Repo = manager.data['repo']
+    repo: Repo = manager.data["repo"]
     user = await repo.user_dao.get_user(telegram_id=c.from_user.id)
     await repo.organization_dao.create_organization(
-        district_id=data['district_id'],
+        district_id=data["district_id"],
         creator_id=user.id,
-        activities=await repo.activity_dao.get_activities(ids=data['activity']),
-        name=data['name'],
+        activities=await repo.activity_dao.get_activities(ids=data["activity"]),
+        name=data["name"],
     )
-    await c.message.answer('Организация создана и отправлена на модерацию! '
-                           'Когда мы ее проверим, Вы получите уведомление.')
+    await c.message.answer(
+        "Организация создана и отправлена на модерацию! "
+        "Когда мы ее проверим, Вы получите уведомление."
+    )
     manager.show_mode = ShowMode.SEND
     await manager.done()
     manager.show_mode = ShowMode.EDIT
@@ -49,18 +63,24 @@ async def on_finish(c: CallbackQuery, button: Button, manager: DialogManager):
 
 async def confirm_data(dialog_manager: DialogManager, **kwargs) -> dict:
     return {
-        "name": dialog_manager.current_context().dialog_data['name'],
+        "name": dialog_manager.current_context().dialog_data["name"],
     }
 
-async def get_not_region_prev_state(c: CallbackQuery, widget: Any, manager: DialogManager):
+
+async def get_not_region_prev_state(
+    c: CallbackQuery, widget: Any, manager: DialogManager
+):
     return RegisterOrganizationSG.region
+
 
 def get_dialog() -> Dialog:
     activity_window = ActivityWindow(state=RegisterOrganizationSG.activity)
-    region_window = RegionWindow(state=RegisterOrganizationSG.region,
-                                 not_region_state=RegisterOrganizationSG.not_region)
+    region_window = RegionWindow(
+        state=RegisterOrganizationSG.region,
+        not_region_state=RegisterOrganizationSG.not_region,
+    )
     not_region_window = InputTextWindow(
-        id='new_region',
+        id="new_region",
         getter_text=get_not_region_text,
         state=RegisterOrganizationSG.not_region,
         get_prev_state=get_not_region_prev_state,

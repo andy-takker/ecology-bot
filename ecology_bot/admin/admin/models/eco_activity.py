@@ -1,4 +1,4 @@
-from ecology_bot.admin.admin.models.view import SecureModelView
+from ecology_bot.admin.admin.view import SecureModelView
 
 
 class EcoActivityModelView(SecureModelView):

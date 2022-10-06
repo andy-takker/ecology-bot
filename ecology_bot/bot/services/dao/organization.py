@@ -9,11 +9,11 @@ from ecology_bot.bot.services.dao.base import DAO
 
 class OrganizationDAO(DAO):
     async def create_organization(
-            self,
-            creator_id: int,
-            name: str,
-            district_id: int,
-            activities: list[Activity],
+        self,
+        creator_id: int,
+        name: str,
+        district_id: int,
+        activities: list[Activity],
     ) -> Organization:
         async with self.session:
             organization = Organization(
@@ -42,7 +42,9 @@ class OrganizationDAO(DAO):
         q = Event.query().where(Event.organization_id == organization_id)
         return (await self.session.execute(q)).scalars().all()
 
-    async def get_unchecked_organizations(self, user_id: int = None) -> list[Organization]:
+    async def get_unchecked_organizations(
+        self, user_id: int = None
+    ) -> list[Organization]:
         q = select(Organization).where(Organization.is_checked == False)
         if user_id is not None:
             q.where(Organization.creator_id == user_id)
@@ -54,9 +56,14 @@ class OrganizationDAO(DAO):
             org.update(data)
             await self.session.commit()
 
-    async def get_organizations_by_creator(self, telegram_id: int, is_checked: bool | None = None) -> list[
-        Organization]:
-        q = select(Organization).join(User, Organization.creator_id == User.id).where(User.telegram_id == telegram_id)
+    async def get_organizations_by_creator(
+        self, telegram_id: int, is_checked: bool | None = None
+    ) -> list[Organization]:
+        q = (
+            select(Organization)
+            .join(User, Organization.creator_id == User.id)
+            .where(User.telegram_id == telegram_id)
+        )
         if is_checked is not None:
             q = q.where(Organization.is_checked == is_checked)
         return (await self.session.execute(q)).scalars().all()

@@ -6,6 +6,9 @@ from sqlalchemy.orm import as_declarative, declared_attr
 @as_declarative()
 class Base:
     __name__: str
+    __verbose_name__: str
+    __verbose_name_plural__: str
+    __admin_endpoint__: str
 
     @classmethod
     @declared_attr

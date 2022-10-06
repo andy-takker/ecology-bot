@@ -8,13 +8,10 @@ from aiogram_dialog.widgets.text import Text
 
 
 class StartBtn(Start):
-    def __init__(self, id: str, state: State, text: Text, getter: Callable = None, on_click=None):
-        super().__init__(
-            id='create_event',
-            state=state,
-            text=text,
-            on_click=on_click
-        )
+    def __init__(
+        self, id: str, state: State, text: Text, getter: Callable = None, on_click=None
+    ):
+        super().__init__(id="create_event", state=state, text=text, on_click=on_click)
         self.getter = getter
 
     async def _on_click(self, c: CallbackQuery, button: Button, manager: DialogManager):

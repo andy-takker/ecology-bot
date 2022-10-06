@@ -7,13 +7,15 @@ from ecology_bot.bot.dialogs.states import ProfileDeleteSG
 
 
 async def on_delete(c: CallbackQuery, button: Button, manager: DialogManager):
-    await manager.done({'action': 'delete_profile'})
+    await manager.done({"action": "delete_profile"})
 
 
 def get_confirm_window():
     return Window(
-        Const('Вы действительно хотите удалить профиль?'),
-        Row(Cancel(Const("Нет")), Button(Const("Да"), id="confirm", on_click=on_delete)),
+        Const("Вы действительно хотите удалить профиль?"),
+        Row(
+            Cancel(Const("Нет")), Button(Const("Да"), id="confirm", on_click=on_delete)
+        ),
         state=ProfileDeleteSG.confirm,
     )
 

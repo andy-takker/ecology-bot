@@ -2,15 +2,18 @@ from flask import Flask
 from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
 
-from ecology_bot.admin.admin.models.awesome_data import AwesomeDataModelView
-from ecology_bot.admin.admin.models.district import DistrictModelView
-from ecology_bot.admin.admin.models.eco_activity import EcoActivityModelView
-from ecology_bot.admin.admin.models.event import EventModelView
-from ecology_bot.admin.admin.models.organization import OrganizationModelView
-from ecology_bot.admin.admin.models.region import RegionModelView
-from ecology_bot.admin.admin.models.text_chunk import TextChunkModelView
-from ecology_bot.admin.admin.models.volunteer_type import VolunteerTypeModelView
-from ecology_bot.admin.admin.models.user import UserModelView
+from ecology_bot.admin.admin.models import (
+    AwesomeDataModelView,
+    DistrictModelView,
+    EcoActivityModelView,
+    EventModelView,
+    OrganizationModelView,
+    ProfileModelView,
+    RegionModelView,
+    TextChunkModelView,
+    VolunteerTypeModelView,
+    UserModelView,
+)
 from ecology_bot.admin.admin.pages.auth import LoginLink, LogoutLink, LoginView
 from ecology_bot.admin.admin.pages.home import HomeAdminIndexView
 from ecology_bot.database.models import (
@@ -18,8 +21,12 @@ from ecology_bot.database.models import (
     VolunteerType,
     Activity,
     Organization,
-    Event, Region,
-    User, TextChunk, AwesomeData,
+    Event,
+    Region,
+    User,
+    TextChunk,
+    AwesomeData,
+    Profile,
 )
 
 
@@ -39,7 +46,16 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="Регионы",
             endpoint="regions",
-            category='Данные',
+            category="Данные",
+        )
+    )
+    admin.add_view(
+        ProfileModelView(
+            model=Profile,
+            session=database.session,
+            name="Профили волонтеров",
+            endpoint="profiles",
+            category="Данные",
         )
     )
     admin.add_view(
@@ -48,7 +64,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="Районы",
             endpoint="districts",
-            category='Данные',
+            category="Данные",
         )
     )
     admin.add_view(
@@ -57,7 +73,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="Виды волонтерств",
             endpoint="volunteer_types",
-            category='Данные', 
+            category="Данные",
         )
     )
     admin.add_view(
@@ -66,7 +82,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="Активности",
             endpoint="eco_activities",
-            category='Данные',
+            category="Данные",
         )
     )
     admin.add_view(
@@ -75,7 +91,7 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="Организации",
             endpoint="organizations",
-            category='Данные',
+            category="Данные",
         )
     )
     admin.add_view(
@@ -84,34 +100,34 @@ def register_admin(flask_app: Flask, database: SQLAlchemy):
             session=database.session,
             name="События",
             endpoint="events",
-            category='Данные',
+            category="Данные",
         )
     )
     admin.add_view(
         UserModelView(
             model=User,
             session=database.session,
-            name='Пользователи',
-            endpoint='users',
-            category='Данные',
+            name="Пользователи",
+            endpoint="users",
+            category="Данные",
         )
     )
     admin.add_view(
         TextChunkModelView(
             model=TextChunk,
             session=database.session,
-            name='Тексты бота',
-            endpoint='text_chunks',
-            category='Данные',
+            name="Тексты бота",
+            endpoint="text_chunks",
+            category="Данные",
         )
     )
     admin.add_view(
         AwesomeDataModelView(
             model=AwesomeData,
             session=database.session,
-            name='Данные от пользователей',
-            endpoint='awesome_data',
-            category='Данные',
+            name="Данные от пользователей",
+            endpoint="awesome_data",
+            category="Данные",
         )
     )
     admin.add_link(LoginLink(name="Login"))

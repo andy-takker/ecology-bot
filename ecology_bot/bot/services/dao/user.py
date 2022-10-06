@@ -40,14 +40,16 @@ class UserDAO(DAO):
             await self.session.refresh(user)
         return user
 
-    async def create_user_if_not_exist(self, telegram_id: int, is_admin: bool = False) -> User:
+    async def create_user_if_not_exist(
+        self, telegram_id: int, is_admin: bool = False
+    ) -> User:
         user = await self.get_user(telegram_id=telegram_id)
         if user is None:
             return await self.create_user(telegram_id=telegram_id, is_admin=is_admin)
         return user
 
     async def get_user_checked_organization(
-            self, telegram_id: int
+        self, telegram_id: int
     ) -> list[Organization]:
         q = (
             select(Organization)
@@ -69,7 +71,7 @@ class UserDAO(DAO):
         return (await self.session.execute(q)).scalars().first()
 
     async def create_profile(
-            self, user: User, region_id: int, district_id: int, activities: list[Activity]
+        self, user: User, region_id: int, district_id: int, activities: list[Activity]
     ) -> Profile:
         async with self.session:
             profile = Profile()
@@ -83,11 +85,11 @@ class UserDAO(DAO):
             return profile
 
     async def update_profile(
-            self,
-            telegram_id: int,
-            data: dict,
-            volunteer_types: list[VolunteerType] | None = None,
-            activities: list[Activity] | None = None,
+        self,
+        telegram_id: int,
+        data: dict,
+        volunteer_types: list[VolunteerType] | None = None,
+        activities: list[Activity] | None = None,
     ):
         q = Profile.q_from_telegram_id(telegram_id).options(
             selectinload(Profile.activities),
@@ -145,7 +147,7 @@ class UserDAO(DAO):
         return events
 
     async def get_organizations_by_profile(
-            self, profile: Profile, activity_id: int
+        self, profile: Profile, activity_id: int
     ) -> list[Organization]:
         q = (
             Organization.query()
@@ -163,4 +165,3 @@ class UserDAO(DAO):
     async def get_admins(self) -> list[User]:
         q = select(User).filter_by(is_admin=True)
         return (await self.session.execute(q)).scalars().all()
-

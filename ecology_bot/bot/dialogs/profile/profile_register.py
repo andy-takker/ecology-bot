@@ -13,12 +13,14 @@ from ecology_bot.bot.windows.input_text_window import InputTextWindow
 from ecology_bot.bot.windows.region_window import RegionWindow
 
 
-async def complete_registration(c: CallbackQuery, widget: Any, dialog_manager: DialogManager):
-    activities_widget = dialog_manager.dialog().find('m_activities')
+async def complete_registration(
+    c: CallbackQuery, widget: Any, dialog_manager: DialogManager
+):
+    activities_widget = dialog_manager.dialog().find("m_activities")
     activity_ids = list(map(int, activities_widget.get_checked()))
-    repo: Repo = dialog_manager.data['repo']
-    region_id = dialog_manager.current_context().dialog_data['region_id']
-    district_id = dialog_manager.current_context().dialog_data['district_id']
+    repo: Repo = dialog_manager.data["repo"]
+    region_id = dialog_manager.current_context().dialog_data["region_id"]
+    district_id = dialog_manager.current_context().dialog_data["district_id"]
 
     await repo.user_dao.create_profile(
         user=await repo.user_dao.get_user(c.from_user.id),
@@ -27,8 +29,9 @@ async def complete_registration(c: CallbackQuery, widget: Any, dialog_manager: D
         activities=await repo.activity_dao.get_activities(ids=activity_ids),
     )
     await c.message.answer(
-        'Мы пришлем тебе уведомления на основе подписок! '
-        'Также ты можешь зайти в меню каждой подписки и посмотреть подробности')
+        "Мы пришлем тебе уведомления на основе подписок! "
+        "Также ты можешь зайти в меню каждой подписки и посмотреть подробности"
+    )
     dialog_manager.show_mode = ShowMode.SEND
     await dialog_manager.done()
     dialog_manager.show_mode = ShowMode.EDIT
@@ -36,34 +39,38 @@ async def complete_registration(c: CallbackQuery, widget: Any, dialog_manager: D
 
 async def get_not_region_text(dialog_manager: DialogManager, **kwargs):
     return {
-        'text': 'Введите название вашего региона',
+        "text": "Введите название вашего региона",
     }
 
 
-async def get_not_region_prev_state(c: CallbackQuery, widget: Any, manager: DialogManager):
+async def get_not_region_prev_state(
+    c: CallbackQuery, widget: Any, manager: DialogManager
+):
     return RegisterProfileSG.region
 
 
 async def input_handler(m: Message, dialog: Dialog, manager: DialogManager):
-    manager.current_context().dialog_data['new_region'] = m.text
-    repo: Repo = manager.data['repo']
+    manager.current_context().dialog_data["new_region"] = m.text
+    repo: Repo = manager.data["repo"]
     await repo.awesome_data_dao.save_data(
         data=m.text,
-        description='New region',
+        description="New region",
         from_user_id=m.from_user.id,
     )
-    await m.answer(
-        'Ваш ответ записан!')
+    await m.answer("Ваш ответ записан!")
     manager.show_mode = ShowMode.SEND
     await manager.done()
     manager.show_mode = ShowMode.EDIT
 
 
 def get_dialog() -> Dialog:
-    region_window = RegionWindow(state=RegisterProfileSG.region, prev=Cancel,
-                                 not_region_state=RegisterProfileSG.not_region)
+    region_window = RegionWindow(
+        state=RegisterProfileSG.region,
+        prev=Cancel,
+        not_region_state=RegisterProfileSG.not_region,
+    )
     not_region_window = InputTextWindow(
-        id='new_region',
+        id="new_region",
         getter_text=get_not_region_text,
         state=RegisterProfileSG.not_region,
         get_prev_state=get_not_region_prev_state,
@@ -72,7 +79,7 @@ def get_dialog() -> Dialog:
     district_window = DistrictWindow(state=RegisterProfileSG.district)
     activity_window = ActivityWindow(state=RegisterProfileSG.activity, prev=Back)
     confirm_window = ConfirmWindow(
-        text='Зарегистрировать профиль?',
+        text="Зарегистрировать профиль?",
         state=RegisterProfileSG.confirm,
         on_confirm=complete_registration,
     )

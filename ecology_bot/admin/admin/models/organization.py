@@ -1,4 +1,4 @@
-from ecology_bot.admin.admin.models.view import SecureModelView
+from ecology_bot.admin.admin.view import SecureModelView
 
 
 class OrganizationModelView(SecureModelView):
@@ -15,4 +15,4 @@ class OrganizationModelView(SecureModelView):
         "is_checked": "Проверена?",
         "is_superorganization": "Суперорганизация?",
     }
-    column_sortable_list = ['name']
+    column_sortable_list = ["name"]

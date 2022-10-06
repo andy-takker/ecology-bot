@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.engine import Engine
 
@@ -8,6 +10,7 @@ from sqlalchemy.pool import QueuePool
 from ecology_bot.database import Base
 
 
+@lru_cache
 def get_admin_db() -> SQLAlchemy:
     db = SQLAlchemy(metadata=Base.metadata)
     return db

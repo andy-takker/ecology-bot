@@ -1,14 +1,41 @@
-from wtforms import Field, ValidationError
+from flask import flash
+from flask_admin.babel import gettext
+from wtforms import (
+    Field,
+    ValidationError,
+    Form,
+    SelectField,
+    IntegerField,
+    TextAreaField,
+)
+from wtforms.validators import DataRequired, NumberRange
+from wtforms.widgets import TextArea
 
-from ecology_bot.admin.admin.models.view import SecureModelView
+from ecology_bot.admin.admin.view import SecureModelView
 
 from string import ascii_lowercase, digits
 
-SYMBOLS = ascii_lowercase + digits + '_'
+from ecology_bot.bot.dialogs.messages import MESSAGE_KEYS
+from ecology_bot.database.models import TextChunk
+
+SYMBOLS = ascii_lowercase + digits + "_"
 
 KEY_NAME_ERROR = (
-    'Ключ должен состоять только из латинских букв, цифр, знака подчеркивания '
+    "Ключ должен состоять только из латинских букв, цифр, знака подчеркивания "
 )
+
+
+class CKTextAreaWidget(TextArea):
+    def __call__(self, field, **kwargs):
+        if kwargs.get("class"):
+            kwargs["class"] += " ckeditor"
+        else:
+            kwargs.setdefault("class", "ckeditor")
+        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+
+
+class CKTextAreaField(TextAreaField):
+    widget = CKTextAreaWidget()
 
 
 def validate_key(form, field: Field):
@@ -17,19 +44,60 @@ def validate_key(form, field: Field):
             raise ValidationError(KEY_NAME_ERROR)
 
 
-class TextChunkModelView(SecureModelView):
-    column_list = ['created_at', 'key', 'weight', 'description']
-    column_default_sort = [('key', True), ('weight', True)]
+class TextChunkForm(Form):
+    key = SelectField(
+        label="Сообщение",
+        validators=[DataRequired(message="Обязательное поле!"), validate_key],
+        choices=MESSAGE_KEYS,
+    )
+    weight = IntegerField(
+        label="Вес",
+        default=0,
+        description="Чем больше вес, тем выше будет текст",
+        validators=[
+            NumberRange(min=0, max=1000),
+            DataRequired(message="Обязательное поле!"),
+        ],
+    )
+    text = CKTextAreaField(
+        label="Текст",
+        description="Само сообщение",
+        validators=[DataRequired(message="Обязательное поле!")],
+    )
 
-    form_args = {
-        'key': {
-            'validators': [validate_key],
-        }
-    }
+
+class TextChunkModelView(SecureModelView):
+    extra_js = ["https://cdn.ckeditor.com/4.6.0/standard/ckeditor.js"]
+    column_list = ["created_at", "key", "weight", "description"]
+    column_default_sort = [("key", True), ("weight", True)]
     column_labels = {
-        'created_at': 'Дата создания',
-        'key': 'Идентификатор',
-        'description': 'Описание',
-        'text': 'Текст',
-        'weight': 'Вес',
+        "created_at": "Дата создания",
+        "key": "Идентификатор",
+        "description": "Описание",
+        "text": "Текст",
+        "weight": "Вес",
     }
+    form = TextChunkForm
+
+    def create_model(self, form):
+        weight = form.weight.data
+        key = form.key.data
+        text = (
+            self.session.query(TextChunk)
+            .filter(
+                TextChunk.weight == weight,
+                TextChunk.key == key,
+            )
+            .first()
+        )
+        if text is not None:
+            flash(
+                gettext(
+                    "Failed to create record. %(error)s",
+                    error="Запись с таким ключом и весом уже была создана!",
+                ),
+                "error",
+            )
+            self.session.rollback()
+            return False
+        return super().create_model(form)

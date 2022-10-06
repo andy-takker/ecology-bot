@@ -13,9 +13,13 @@ class DistrictDAO(DAO):
             q = q.filter(District.id.in_(ids))
         return (await self.session.execute(q)).scalars().all()
 
-    async def get_districts_by_region(self, region_id: int, parent_id: int | None) -> list[District]:
+    async def get_districts_by_region(
+        self, region_id: int, parent_id: int | None
+    ) -> list[District]:
         """Возвращает список районов по региону"""
-        q = select(District).where(District.region_id == region_id, District.parent_id == parent_id)
+        q = select(District).where(
+            District.region_id == region_id, District.parent_id == parent_id
+        )
         return (await self.session.execute(q)).scalars().all()
 
     async def get_children(self, district_id: int) -> list[District]:

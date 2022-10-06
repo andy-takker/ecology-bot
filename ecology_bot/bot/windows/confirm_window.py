@@ -10,7 +10,10 @@ class ConfirmWindow(Window):
     def __init__(self, state: State, text: str, on_confirm: Callable, getter=None):
         super().__init__(
             Format(text=text),
-            Row(Back(Const("Нет")), Button(Const("Да"), id='confirm', on_click=on_confirm)),
+            Row(
+                Back(Const("Нет")),
+                Button(Const("Да"), id="confirm", on_click=on_confirm),
+            ),
             state=state,
             getter=getter,
         )

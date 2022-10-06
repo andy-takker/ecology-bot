@@ -19,20 +19,21 @@ def default_handler(id) -> Awaitable:
 
 
 class InputTextWindow(Window):
-
-    def __init__(self, id: str,
-                 getter_text: Callable,
-                 state: State,
-                 get_prev_state: Optional[OnClick],
-                 handler: Coroutine = None,
-                 ):
+    def __init__(
+        self,
+        id: str,
+        getter_text: Callable,
+        state: State,
+        get_prev_state: Optional[OnClick],
+        handler: Coroutine = None,
+    ):
         if handler is None:
             handler = default_handler(id)
         super().__init__(
-            Format('{text}'),
+            Format("{text}"),
             GoTo(
-                text='Назад',
-                id='switch_to_btn',
+                text="Назад",
+                id="switch_to_btn",
                 state=get_prev_state,
             ),
             MessageInput(handler),

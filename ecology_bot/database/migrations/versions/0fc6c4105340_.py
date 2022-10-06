@@ -11,16 +11,16 @@ import sqlalchemy_utils
 
 
 # revision identifiers, used by Alembic.
-revision = '0fc6c4105340'
-down_revision = '582ca935d161'
+revision = "0fc6c4105340"
+down_revision = "582ca935d161"
 branch_labels = None
 depends_on = None
 
 
 def upgrade() -> None:
-    op.alter_column('district', 'region_id',
-               existing_type=sa.BigInteger(),
-               nullable=False)
+    op.alter_column(
+        "district", "region_id", existing_type=sa.BigInteger(), nullable=False
+    )
 
 
 def downgrade() -> None:

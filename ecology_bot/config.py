@@ -8,11 +8,11 @@ class DefaultSettings(BaseSettings):
     DEBUG: bool = Field(default=True)
     SECRET_KEY: str = Field(default=token_hex(16))
 
-    POSTGRES_USER: str = Field(default='user')
-    POSTGRES_PASSWORD: str = Field(default='postgres_password')
-    POSTGRES_DB: str = Field(default='database')
-    POSTGRES_HOST: str = Field(default='127.0.0.1')
-    POSTGRES_PORT: str = Field(default='5432')
+    POSTGRES_USER: str = Field(default="user")
+    POSTGRES_PASSWORD: str = Field(default="postgres_password")
+    POSTGRES_DB: str = Field(default="database")
+    POSTGRES_HOST: str = Field(default="127.0.0.1")
+    POSTGRES_PORT: str = Field(default="5432")
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
@@ -29,12 +29,12 @@ class DefaultSettings(BaseSettings):
             port=f'{values.get("POSTGRES_PORT") or ""}',
         )
 
-    TELEGRAM_BOT_TOKEN: str = Field(default='need_token')
+    TELEGRAM_BOT_TOKEN: str = Field(default="need_token")
     TELEGRAM_BOT_ADMINS: List[int] = Field(default=[292990139])
 
-    REDIS_HOST: str = Field(default='127.0.0.1')
+    REDIS_HOST: str = Field(default="127.0.0.1")
     REDIS_PORT: int = Field(default=6379)
-    REDIS_PASSWORD: str = Field(default='redis_password')
+    REDIS_PASSWORD: str = Field(default="redis_password")
 
     REDIS_URI: Optional[RedisDsn] = None
 
