@@ -4,6 +4,10 @@ from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import Dialog, DialogManager, ShowMode
 from aiogram_dialog.widgets.kbd import Cancel, Back
 
+from ecology_bot.bot.dialogs.messages import (
+    ON_PROFILE_REGISTRATION_END_TEXT,
+    DEFAULT_MESSAGES,
+)
 from ecology_bot.bot.dialogs.states import RegisterProfileSG
 from ecology_bot.bot.services.repo import Repo
 from ecology_bot.bot.windows.activity_window import ActivityWindow
@@ -29,8 +33,10 @@ async def complete_registration(
         activities=await repo.activity_dao.get_activities(ids=activity_ids),
     )
     await c.message.answer(
-        "Мы пришлем тебе уведомления на основе подписок! "
-        "Также ты можешь зайти в меню каждой подписки и посмотреть подробности"
+        await repo.text_chunk_dao.get_text(
+            key=ON_PROFILE_REGISTRATION_END_TEXT,
+            default=DEFAULT_MESSAGES[ON_PROFILE_REGISTRATION_END_TEXT],
+        )
     )
     dialog_manager.show_mode = ShowMode.SEND
     await dialog_manager.done()
@@ -68,6 +74,7 @@ def get_dialog() -> Dialog:
         state=RegisterProfileSG.region,
         prev=Cancel,
         not_region_state=RegisterProfileSG.not_region,
+        next_state=RegisterProfileSG.district,
     )
     not_region_window = InputTextWindow(
         id="new_region",
@@ -76,7 +83,9 @@ def get_dialog() -> Dialog:
         get_prev_state=get_not_region_prev_state,
         handler=input_handler,
     )
-    district_window = DistrictWindow(state=RegisterProfileSG.district)
+    district_window = DistrictWindow(
+        state=RegisterProfileSG.district, prev_state=RegisterProfileSG.region
+    )
     activity_window = ActivityWindow(state=RegisterProfileSG.activity, prev=Back)
     confirm_window = ConfirmWindow(
         text="Зарегистрировать профиль?",

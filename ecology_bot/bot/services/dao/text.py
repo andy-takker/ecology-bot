@@ -21,7 +21,7 @@ class TextChunkDAO(DAO):
         value = await self.cache.get(cache_key)
         if value is None:
             texts = await self.get_by_key(key=key)
-            if texts is None:
+            if not texts:
                 value = default
             else:
                 value = sep.join(texts)

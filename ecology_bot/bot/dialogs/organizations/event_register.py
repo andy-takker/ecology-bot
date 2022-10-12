@@ -97,7 +97,7 @@ async def get_description_text(dialog_manager: DialogManager, **kwargs):
 
 
 def get_dialog():
-    district_window = DistrictWindow(state=CreateEventSG.district, prev=Cancel)
+    district_window = DistrictWindow(state=CreateEventSG.district, is_cancel=True)
     event_type_window = EventTypeWindow(
         state=CreateEventSG.event_type,
         event_type_states={

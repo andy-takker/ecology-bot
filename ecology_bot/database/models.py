@@ -32,6 +32,8 @@ __all__ = [
     "Employee",
     "Event",
     "EventType",
+    "GlobalEvent",
+    "GlobalEventUser",
     "Mailing",
     "Organization",
     "Profile",
@@ -92,6 +94,7 @@ class Region(PkMixin, Base):
     __admin_endpoint__ = "regions"
 
     name = Column(String(255), unique=True, nullable=False, index=True)
+
     profiles = relationship("Profile", back_populates="region")
     districts = relationship("District", back_populates="region")
 
@@ -146,6 +149,12 @@ class User(PkMixin, TimestampMixin, Base):
 
     organizations: List = relationship("Organization", back_populates="creator")
     profile = relationship("Profile", back_populates="user", uselist=False)
+    global_events = relationship(
+        "GlobalEvent", secondary="global_event_user", back_populates="users"
+    )
+    global_event_users = relationship(
+        "GlobalEventUser", back_populates="user", viewonly=True
+    )
 
     @property
     def has_unchecked_organizations(self) -> bool:
@@ -325,6 +334,42 @@ class ActivityOrganization(PkMixin, Base):
         ForeignKey("organization.id", ondelete="CASCADE"),
         index=True,
         nullable=False,
+    )
+
+
+class GlobalEvent(PkMixin, TimestampMixin, Base):
+    __verbose_name__ = "Глобальное событие"
+    __verbose_name_plural__ = "Глобальные события"
+    __admin_endpoint__ = "global_events"
+
+    name = Column(String, index=True, nullable=False)
+    is_active = Column(Boolean, default=False)
+
+    users = relationship(
+        "User", back_populates="global_events", secondary="global_event_user"
+    )
+    global_event_users = relationship(
+        "GlobalEventUser", back_populates="global_event", viewonly=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class GlobalEventUser(PkMixin, TimestampMixin, Base):
+    __verbose_name__ = "Подписчик глобального события"
+    __verbose_name_plural__ = "Подписчики глобальных событий"
+    __admin_endpoint__ = "global_event_users"
+
+    user_id = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
+    global_event_id = Column(
+        BigInteger, ForeignKey("global_event.id"), index=True, nullable=False
+    )
+    is_subscribed = Column(Boolean, index=True, default=False)
+
+    user = relationship("User", back_populates="global_event_users", viewonly=True)
+    global_event = relationship(
+        "GlobalEvent", back_populates="global_event_users", viewonly=True
     )
 
 

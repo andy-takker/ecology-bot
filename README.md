@@ -76,3 +76,4 @@ alembic upgrade head
 ```shell
 docker-compose exec bot alembic upgrade head
 ```
+

@@ -64,7 +64,8 @@ class ActivityWindow(Window):
             state=state,
         )
 
-    def get_activity_keyboard(self) -> ScrollingGroup:
+    @staticmethod
+    def get_activity_keyboard() -> ScrollingGroup:
         el_id = "m_activities"
         getter = lambda x: x.id
         items = "activities"

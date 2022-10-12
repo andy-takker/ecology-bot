@@ -1,5 +1,3 @@
-from typing import Optional
-
 from aiogram.dispatcher.filters.state import State
 from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager

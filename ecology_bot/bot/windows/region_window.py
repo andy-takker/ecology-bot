@@ -24,9 +24,13 @@ CHOOSE_REGION_MESSAGE = "Выберите регион!"
 
 class RegionWindow(Window):
     def __init__(
-        self, state: State, not_region_state: State, prev: Type[Back | Cancel] = Back
+        self,
+        state: State,
+        not_region_state: State,
+        next_state: State,
+        prev: Type[Back | Cancel] = Back,
     ):
-        regions = self.get_region_keyboard()
+        regions = self.get_region_keyboard(next_state=next_state)
         super().__init__(
             Const(CHOOSE_REGION_MESSAGE),
             regions,

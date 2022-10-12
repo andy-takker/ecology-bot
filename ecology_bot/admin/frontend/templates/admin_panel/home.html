@@ -7,12 +7,21 @@
     </div>
   </div>
   {% if current_user.is_authenticated %}
-    {% for model in models_data %}
-      <div class="col-md-6 col-sm-6 col-lg-4">
-        <h5>{{model.verbose_name}}</h5>
-        <p>Всего: {{ model.total_objs }}</p>
-        <br> {{ url_for('admin.index') }}
+    {% for row in models_data %}
+      <div class="row">
+          {% for model in row %}
+          <div class="col-md-6 col-sm-6 col-lg-4">
+                  <h5>{{model.verbose_name}}</h5>
+                  <p>Всего: {{ model.total_objs }}</p>
+                  <p>
+                    <a href="{{ model.url }}">Перейти</a>
+                  </p>
+
+                 <br>
+                </div>
+            {% endfor %}
       </div>
+
     {% endfor %}
   {% endif %}
 

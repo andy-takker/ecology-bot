@@ -9,3 +9,5 @@ class RegionModelView(SecureModelView):
     }
     column_searchable_list = ["name"]
     column_sortable_list = ["name"]
+
+    form_columns = ["name"]

@@ -6,15 +6,13 @@ from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import (
     Back,
     Button,
-    ScrollingGroup,
-    Multiselect,
-    Cancel,
-    Next,
-    Select,
-    Row,
 )
-from aiogram_dialog.widgets.text import Const, Format
+from aiogram_dialog.widgets.text import Const
 
+from ecology_bot.bot.dialogs.messages import (
+    ON_ORG_REGISTRATION_END_TEXT,
+    DEFAULT_MESSAGES,
+)
 from ecology_bot.bot.dialogs.profile.profile_register import (
     input_handler,
     get_not_region_text,
@@ -52,9 +50,12 @@ async def on_finish(c: CallbackQuery, button: Button, manager: DialogManager):
         activities=await repo.activity_dao.get_activities(ids=data["activity"]),
         name=data["name"],
     )
+
     await c.message.answer(
-        "Организация создана и отправлена на модерацию! "
-        "Когда мы ее проверим, Вы получите уведомление."
+        await repo.text_chunk_dao.get_text(
+            key=ON_ORG_REGISTRATION_END_TEXT,
+            default=DEFAULT_MESSAGES[ON_ORG_REGISTRATION_END_TEXT],
+        )
     )
     manager.show_mode = ShowMode.SEND
     await manager.done()
@@ -78,6 +79,7 @@ def get_dialog() -> Dialog:
     region_window = RegionWindow(
         state=RegisterOrganizationSG.region,
         not_region_state=RegisterOrganizationSG.not_region,
+        next_state=RegisterOrganizationSG.district,
     )
     not_region_window = InputTextWindow(
         id="new_region",
@@ -86,7 +88,9 @@ def get_dialog() -> Dialog:
         get_prev_state=get_not_region_prev_state,
         handler=input_handler,
     )
-    district_window = DistrictWindow(state=RegisterOrganizationSG.district)
+    district_window = DistrictWindow(
+        state=RegisterOrganizationSG.district, prev_state=RegisterOrganizationSG.region
+    )
     name_window = get_name_window()
     confirm_window = ConfirmWindow(
         text='Зарегистрировать организацию "{name}"?',

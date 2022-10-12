@@ -25,16 +25,6 @@ async def get_event_types(dialog_manager: DialogManager, **kwargs):
 
 class EventTypeWindow(Window):
     def __init__(self, state: State, event_type_states: dict[EventType, State]):
-        def get_event_type_keyboard() -> Group:
-            event_types = Select(
-                Format("{item.name}"),
-                id="s_event_types",
-                item_id_getter=lambda x: x.id,
-                items="event_types",
-                on_click=on_event_type_selected,
-            )
-            return Column(event_types)
-
         async def on_event_type_selected(
             c: CallbackQuery, widget: Any, manager: DialogManager, item_id: str
         ):
@@ -42,7 +32,7 @@ class EventTypeWindow(Window):
             manager.current_context().dialog_data["event_type"] = event_type.value
             await manager.dialog().switch_to(state=event_type_states[event_type])
 
-        event_type_keyboard = get_event_type_keyboard()
+        event_type_keyboard = self.get_event_type_keyboard(on_event_type_selected)
         super().__init__(
             Const("Выберите тип объявления:"),
             event_type_keyboard,
@@ -50,3 +40,14 @@ class EventTypeWindow(Window):
             state=state,
             getter=get_event_types,
         )
+
+    @staticmethod
+    def get_event_type_keyboard(on_event_type_selected) -> Group:
+        event_types = Select(
+            Format("{item.name}"),
+            id="s_event_types",
+            item_id_getter=lambda x: x.id,
+            items="event_types",
+            on_click=on_event_type_selected,
+        )
+        return Column(event_types)

@@ -14,11 +14,10 @@ from aiogram_dialog.widgets.kbd import (
 from aiogram_dialog.widgets.text import Const, Format
 
 from ecology_bot.bot.dialogs.messages import (
-    HELP_MESSAGE,
-    ONBOARDING_MESSAGE,
     ON_HELP_TEXT,
     ON_START_TEXT,
-    RETURN_MESSAGE,
+    ON_RETURN_TEXT,
+    DEFAULT_MESSAGES,
 )
 from ecology_bot.bot.dialogs.states import (
     MainSG,
@@ -64,17 +63,10 @@ async def get_help_data(dialog_manager: DialogManager, **kwargs) -> dict:
     repo = dialog_manager.data["repo"]
     return dict(
         help_text=await repo.text_chunk_dao.get_text(
-            key=ON_HELP_TEXT, default=HELP_MESSAGE
+            key=ON_HELP_TEXT,
+            default=DEFAULT_MESSAGES[ON_HELP_TEXT],
         )
     )
-
-
-async def get_window_data(dialog_manager: DialogManager, **kwargs) -> dict:
-    repo = dialog_manager.data["repo"]
-    dialog_manager.data["texts"] = True
-    return {
-        ON_START_TEXT: await repo.text_chunk_dao.get_text(key=ON_START_TEXT),
-    }
 
 
 async def process_result(start_data: Data, result: Any, manager: DialogManager):
@@ -150,46 +142,68 @@ def get_org_list_window() -> Window:
     )
 
 
-def get_main_menu_window() -> Window:
-    return Window(
-        Const(RETURN_MESSAGE, when=is_known_user),
-        Const(ONBOARDING_MESSAGE, when=lambda d, w, m: not is_known_user(d, w, m)),
-        Format(
-            "\n{%s}" % ON_START_TEXT,
-            when=lambda d, w, n: has_on_startup_messages(d, w, n),
-        ),
-        Start(
-            text=Const("Зарегистрировать профиль волонтера"),
-            id="register_volunteer_profile",
-            state=RegisterProfileSG.region,
-            when=lambda d, w, m: not has_profile(d, w, m),
-        ),
-        Start(
-            text=Const("Перейти к профилю волонтера"),
-            when=has_profile,
-            id="go_volunteer_profile",
-            state=ProfileManagementSG.main,
-        ),
-        Next(text=Const("Что может этот бот?")),
-        Start(
-            text=Const("Добавьте свою организацию"),
-            id="register_organization",
-            state=RegisterOrganizationSG.activity,
-            when=lambda d, w, m: not has_unchecked_org(d, w, m),
-        ),
-        SwitchTo(
-            text=Const("Перейти к меню организации"),
-            id="switch_to_org_list",
-            state=MainSG.org_list,
-            when=has_checked_org,
-        ),
-        state=MainSG.main,
-        getter=get_window_data,
-    )
+class MainMenuWindow(Window):
+    def __init__(self):
+        super().__init__(
+            Format("{start_message}"),
+            Start(
+                text=Const("Зарегистрировать профиль волонтера"),
+                id="register_volunteer_profile",
+                state=RegisterProfileSG.region,
+                when=lambda d, w, m: not has_profile(d, w, m),
+            ),
+            Start(
+                text=Const("Перейти к профилю волонтера"),
+                when=has_profile,
+                id="go_volunteer_profile",
+                state=ProfileManagementSG.main,
+            ),
+            Next(text=Const("Что может этот бот?")),
+            Start(
+                text=Const("Добавьте свою организацию"),
+                id="register_organization",
+                state=RegisterOrganizationSG.activity,
+                when=lambda d, w, m: not has_unchecked_org(d, w, m),
+            ),
+            SwitchTo(
+                text=Const("Перейти к меню организации"),
+                id="switch_to_org_list",
+                state=MainSG.org_list,
+                when=has_checked_org,
+            ),
+            state=MainSG.main,
+            getter=self.get_data(),
+        )
+
+    def get_data(self):
+        async def get_window_data(dialog_manager: DialogManager, **kwargs) -> dict:
+            repo = dialog_manager.data["repo"]
+            user = await repo.user_dao.get_user(
+                telegram_id=dialog_manager.event.from_user.id
+            )
+            messages = []
+            if user is not None:
+                messages.append(
+                    await repo.text_chunk_dao.get_text(
+                        key=ON_RETURN_TEXT, default=DEFAULT_MESSAGES[ON_RETURN_TEXT]
+                    )
+                )
+            else:
+                messages.append(
+                    await repo.text_chunk_dao.get_text(
+                        key=ON_START_TEXT,
+                        default=DEFAULT_MESSAGES[ON_START_TEXT],
+                    )
+                )
+            return {
+                "start_message": "\n".join(messages),
+            }
+
+        return get_window_data
 
 
 def get_dialog() -> Dialog:
-    main_menu_window = get_main_menu_window()
+    main_menu_window = MainMenuWindow()
     help_window = get_help_window()
     org_list_window = get_org_list_window()
     main_menu = Dialog(

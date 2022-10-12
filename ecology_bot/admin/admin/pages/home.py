@@ -8,9 +8,9 @@ from ecology_bot.database.models import (
     Activity,
     AwesomeData,
     District,
-    Employee,
     Event,
-    Mailing,
+    GlobalEvent,
+    GlobalEventUser,
     Organization,
     Profile,
     Region,
@@ -38,6 +38,8 @@ class HomeAdminIndexView(AdminIndexView):
             AwesomeData,
             District,
             Event,
+            GlobalEvent,
+            GlobalEventUser,
             Organization,
             Profile,
             Region,
@@ -46,15 +48,16 @@ class HomeAdminIndexView(AdminIndexView):
             VolunteerType,
         )
         models_data = []
-        for model in models:
-            models_data.append(
+        for i, model in enumerate(models):
+            if i % 3 == 0:
+                models_data.append([])
+            models_data[-1].append(
                 ModelData(
                     verbose_name=model.__verbose_name_plural__,
                     total_objs=db.session.query(model).count(),
                     url=url_for(model.__admin_endpoint__ + ".index_view"),
                 )
             )
-        print(Activity.__verbose_name_plural__)
         return self.render(
             template="admin_panel/home.html",
             models_data=models_data,

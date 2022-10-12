@@ -37,25 +37,21 @@ from ecology_bot.database.engine import get_async_session_maker
 from ecology_bot.utils.get_settings import get_settings
 
 
-def register_dialogs(registry: DialogRegistry):
+def register_dialogs(registry: DialogRegistry) -> None:
     logger.info("Register dialogs")
-    main_menu = get_main_menu_dialog()
-    profile_register = get_profile_register_dialog()
-    org_register = get_org_register_dialog()
-    org_dialog = get_org_dialog()
-    profile_dialog = get_profile_dialog()
-    delete_profile_dialog = get_delete_profile_dialog()
-    volunteer_register = get_volunteer_register_dialog()
-    event_register = get_event_register_dialog()
+    dialogs = [
+        get_main_menu_dialog,
+        get_profile_register_dialog,
+        get_org_register_dialog,
+        get_org_dialog,
+        get_profile_dialog,
+        get_delete_profile_dialog,
+        get_volunteer_register_dialog,
+        get_event_register_dialog,
+    ]
+    for dialog in dialogs:
+        registry.register(dialog())
     registry.register_start_handler(MainSG.main)
-    registry.register(main_menu)
-    registry.register(profile_register)
-    registry.register(org_register)
-    registry.register(profile_dialog)
-    registry.register(delete_profile_dialog)
-    registry.register(volunteer_register)
-    registry.register(org_dialog)
-    registry.register(event_register)
 
 
 async def main():
