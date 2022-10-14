@@ -42,3 +42,4 @@ class GlobalEventDAO(DAO):
             GlobalEventUser.global_event_id == global_event_id,
         )
         await self.session.execute(q)
+        await self.session.commit()
