@@ -44,7 +44,8 @@ class GlobalMailingModelView(SecureModelView):
         "created_at": "Создано",
         "updated_at": "Обновлено",
         "name": "Название",
-        "description": "Описание"
+        "description": "Описание",
+        "global_event.name": "Глобальное мероприятие",
     }
     form = GlobalMailingForm
 

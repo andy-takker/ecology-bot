@@ -339,8 +339,8 @@ class ActivityOrganization(PkMixin, Base):
 
 
 class GlobalEvent(PkMixin, TimestampMixin, Base):
-    __verbose_name__ = "Глобальное событие"
-    __verbose_name_plural__ = "Глобальные события"
+    __verbose_name__ = "Глобальное мероприятие"
+    __verbose_name_plural__ = "Глобальные мероприятия"
     __admin_endpoint__ = "global_events"
 
     name = Column(String(512), index=True, nullable=False)
@@ -364,8 +364,8 @@ class GlobalEvent(PkMixin, TimestampMixin, Base):
 
 
 class GlobalEventUser(PkMixin, TimestampMixin, Base):
-    __verbose_name__ = "Подписчик глобального события"
-    __verbose_name_plural__ = "Подписчики глобальных событий"
+    __verbose_name__ = "Подписчик мероприятия"
+    __verbose_name_plural__ = "Подписчики мероприятий"
     __admin_endpoint__ = "global_event_users"
     __table_args__ = (
         UniqueConstraint(
