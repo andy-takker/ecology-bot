@@ -1,6 +1,6 @@
 from string import ascii_lowercase, digits
 
-from aioredis import Redis
+from redis import Redis
 from flask import flash
 from flask_admin.babel import gettext
 from wtforms import (
