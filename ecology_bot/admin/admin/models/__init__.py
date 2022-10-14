@@ -4,6 +4,7 @@ from ecology_bot.admin.admin.models.eco_activity import ActivityModelView
 from ecology_bot.admin.admin.models.event import EventModelView
 from ecology_bot.admin.admin.models.global_event import GlobalEventModelView
 from ecology_bot.admin.admin.models.global_event_user import GlobalEventUserModelView
+from ecology_bot.admin.admin.models.global_mailing import GlobalMailingModelView
 from ecology_bot.admin.admin.models.organization import OrganizationModelView
 from ecology_bot.admin.admin.models.profile import ProfileModelView
 from ecology_bot.admin.admin.models.region import RegionModelView
@@ -19,6 +20,7 @@ __all__ = [
     "EventModelView",
     "GlobalEventModelView",
     "GlobalEventUserModelView",
+    "GlobalMailingModelView",
     "OrganizationModelView",
     "ProfileModelView",
     "RegionModelView",

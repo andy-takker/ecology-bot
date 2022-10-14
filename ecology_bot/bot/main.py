@@ -7,7 +7,6 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.types import ParseMode
 from aiogram_dialog import DialogRegistry
 from loguru import logger
-from redis.client import Redis
 
 from ecology_bot.bot.dialogs.main_menu import get_dialog as get_main_menu_dialog
 from ecology_bot.bot.dialogs.organizations.organization_menu import (

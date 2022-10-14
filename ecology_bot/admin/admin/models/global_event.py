@@ -38,6 +38,7 @@ class GlobalEventModelView(SecureModelView):
         "updated_at": "Обновлено",
         "name": "Название",
         "is_active": "Активен?",
+        "description": "Описание",
     }
     column_descriptions = {
         "is_active": "Активные события отображаются у пользователей в ленте"

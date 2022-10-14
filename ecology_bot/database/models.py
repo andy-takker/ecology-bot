@@ -34,6 +34,7 @@ __all__ = [
     "EventType",
     "GlobalEvent",
     "GlobalEventUser",
+    "GlobalMailing",
     "Mailing",
     "Organization",
     "Profile",
@@ -343,7 +344,7 @@ class GlobalEvent(PkMixin, TimestampMixin, Base):
     __admin_endpoint__ = "global_events"
 
     name = Column(String(512), index=True, nullable=False)
-    description = Column(String(3072), index=True, nullable=False)
+    description = Column(String(2048), index=True, nullable=False)
     is_active = Column(Boolean, default=False)
 
     users = relationship(
@@ -352,6 +353,7 @@ class GlobalEvent(PkMixin, TimestampMixin, Base):
     global_event_users = relationship(
         "GlobalEventUser", back_populates="global_event", viewonly=True
     )
+    global_mailings = relationship("GlobalMailing", back_populates="global_event")
 
     def __str__(self):
         return self.name
@@ -508,6 +510,24 @@ class ActivityEvent(PkMixin, Base):
         index=True,
         nullable=False,
     )
+
+
+class GlobalMailing(PkMixin, TimestampMixin, Base):
+    """Глобальная рассылка пользователей"""
+
+    __verbose_name__ = "Глобальная рассылка"
+    __verbose_name_plural__ = "Глобальные рассылки"
+    __admin_endpoint__ = "global_mailings"
+
+    name = Column(String(512), index=True, nullable=False)
+    description = Column(String(3072), index=True, nullable=False)
+    global_event_id = Column(BigInteger, ForeignKey("global_event.id"), index=True, nullable=False)
+
+    global_event = relationship("GlobalEvent", back_populates="global_mailings")
+
+    @property
+    def clean_description(self):
+        return self.description.replace("<p>", "").replace("</p>", "")
 
 
 class Mailing(PkMixin, TimestampMixin, Base):

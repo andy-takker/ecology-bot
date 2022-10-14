@@ -1,7 +1,7 @@
 version: '3.0'
 
 services:
-  database:
+  db:
     container_name: 'bot_postgres'
     image: 'postgres:13'
     restart: always
@@ -31,7 +31,7 @@ services:
     environment:
       DEBUG: ${DEBUG}
 
-      POSTGRES_HOST: database
+      POSTGRES_HOST: db
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -43,6 +43,8 @@ services:
 
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       TELEGRAM_BOT_ADMINS: ${TELEGRAM_BOT_ADMINS}
+
+      SECRET_KEY: ${SECRET_KEY}
 
       FLASK_APP: "ecology_bot.admin.wsgi:app"
 
@@ -58,7 +60,7 @@ services:
     container_name: 'bot'
     image: bot
     depends_on:
-      - database
+      - db
       - redis
       - worker
     command: python ecology_bot/bot/main.py
@@ -69,7 +71,7 @@ services:
     environment:
       DEBUG: ${DEBUG}
 
-      POSTGRES_HOST: database
+      POSTGRES_HOST: db
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -88,13 +90,13 @@ services:
     container_name: 'bot_worker'
     image: bot
     depends_on:
-      - database
+      - db
       - redis
     command: celery -A ecology_bot.workers.celery worker -l INFO
     restart: on-failure
     environment:
       DEBUG: ${DEBUG}
-      POSTGRES_HOST: database
+      POSTGRES_HOST: db
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
