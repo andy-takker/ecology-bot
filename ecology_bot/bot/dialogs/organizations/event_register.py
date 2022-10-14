@@ -32,7 +32,6 @@ async def get_desc_prev_state(c: CallbackQuery, widget: Any, manager: DialogMana
 
 
 async def on_start(data: Data, manager: DialogManager):
-    print(data)
     organization_id: Organization = data["organization_id"]
     repo: Repo = manager.data["repo"]
     organization = await repo.organization_dao.get_organization(organization_id)

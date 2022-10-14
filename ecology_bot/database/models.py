@@ -342,7 +342,8 @@ class GlobalEvent(PkMixin, TimestampMixin, Base):
     __verbose_name_plural__ = "Глобальные события"
     __admin_endpoint__ = "global_events"
 
-    name = Column(String, index=True, nullable=False)
+    name = Column(String(512), index=True, nullable=False)
+    description = Column(String(2048), index=True, nullable=False)
     is_active = Column(Boolean, default=False)
 
     users = relationship(
@@ -355,11 +356,20 @@ class GlobalEvent(PkMixin, TimestampMixin, Base):
     def __str__(self):
         return self.name
 
+    @property
+    def clean_description(self):
+        return self.description.replace("<p>", "").replace("</p>", "")
+
 
 class GlobalEventUser(PkMixin, TimestampMixin, Base):
     __verbose_name__ = "Подписчик глобального события"
     __verbose_name_plural__ = "Подписчики глобальных событий"
     __admin_endpoint__ = "global_event_users"
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id", "global_event_id", name="_user_id_global_event_id_uc"
+        ),
+    )
 
     user_id = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
     global_event_id = Column(

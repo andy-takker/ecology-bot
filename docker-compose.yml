@@ -4,7 +4,7 @@ services:
   database:
     container_name: 'bot_postgres'
     image: 'postgres:13'
-    restart: on-failure
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -25,6 +25,7 @@ services:
 
   admin:
     container_name: 'bot_admin'
+    restart: on-failure
     image: bot
     command: python3 -m poetry run gunicorn -c ecology_bot/admin/gunicorn_conf.py ecology_bot.admin.wsgi:app
     environment:
@@ -47,6 +48,7 @@ services:
 
   nginx:
     container_name: 'bot_nginx'
+    restart: always
     build: ./docker/nginx
     ports:
       - "1337:80"

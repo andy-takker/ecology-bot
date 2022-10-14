@@ -1,3 +1,5 @@
+from string import ascii_lowercase, digits
+
 from flask import flash
 from flask_admin.babel import gettext
 from wtforms import (
@@ -6,15 +8,11 @@ from wtforms import (
     Form,
     SelectField,
     IntegerField,
-    TextAreaField,
 )
 from wtforms.validators import DataRequired, NumberRange
-from wtforms.widgets import TextArea
 
+from ecology_bot.admin.admin.utils.text_area_field import CKTextAreaField
 from ecology_bot.admin.admin.view import SecureModelView
-
-from string import ascii_lowercase, digits
-
 from ecology_bot.bot.dialogs.messages import MESSAGE_KEYS
 from ecology_bot.database.models import TextChunk
 
@@ -23,19 +21,6 @@ SYMBOLS = ascii_lowercase + digits + "_"
 KEY_NAME_ERROR = (
     "Ключ должен состоять только из латинских букв, цифр, знака подчеркивания "
 )
-
-
-class CKTextAreaWidget(TextArea):
-    def __call__(self, field, **kwargs):
-        if kwargs.get("class"):
-            kwargs["class"] += " ckeditor"
-        else:
-            kwargs.setdefault("class", "ckeditor")
-        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
-
-
-class CKTextAreaField(TextAreaField):
-    widget = CKTextAreaWidget()
 
 
 def validate_key(form, field: Field):
@@ -68,6 +53,7 @@ class TextChunkForm(Form):
 
 class TextChunkModelView(SecureModelView):
     extra_js = ["https://cdn.ckeditor.com/4.6.0/standard/ckeditor.js"]
+
     column_list = ["created_at", "key", "weight", "description"]
     column_default_sort = [("key", True), ("weight", True)]
     column_labels = {

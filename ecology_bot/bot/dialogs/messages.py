@@ -3,6 +3,9 @@ ON_ORG_REGISTRATION_END_TEXT = "on_org_registration_end_text"
 ON_PROFILE_REGISTRATION_END_TEXT = "on_profile_registration_end_text"
 ON_RETURN_TEXT = "on_return_text"
 ON_START_TEXT = "on_start_text"
+ON_GLOBAL_EVENT_LIST = "on_global_event_list"
+ON_SUBSCRIBE_GLOBAL_EVENT = "on_subscribe_global_event"
+ON_UNSUBSCRIBE_GLOBAL_EVENT = "on_unsubscribe_global_event"
 
 MESSAGE_KEYS = (
     (ON_HELP_TEXT, 'Сообщение "Что может этот бот?"'),
@@ -10,6 +13,9 @@ MESSAGE_KEYS = (
     (ON_PROFILE_REGISTRATION_END_TEXT, "Сообщение в конце регистрации профиля"),
     (ON_RETURN_TEXT, "Сообщение при возвращении пользователя"),
     (ON_START_TEXT, "Сообщение для нового пользователя"),
+    (ON_GLOBAL_EVENT_LIST, "Сообщение для списка глобальных событий"),
+    (ON_SUBSCRIBE_GLOBAL_EVENT, "Сообщение о подписке на мероприятие"),
+    (ON_UNSUBSCRIBE_GLOBAL_EVENT, "Сообщение об отписке от мероприятия"),
 )
 
 DEFAULT_MESSAGES = {
@@ -43,4 +49,7 @@ DEFAULT_MESSAGES = {
         " областью, но далее охватит другие регионы.\n"
         "Помогите улучшить бота: опробуйте весь функционал."
     ),
+    ON_GLOBAL_EVENT_LIST: ("Активные мероприятия, на которые можно подписаться"),
+    ON_SUBSCRIBE_GLOBAL_EVENT: ("Вы подписались на мероприятие!"),
+    ON_UNSUBSCRIBE_GLOBAL_EVENT: ("Вы отписались от мероприятия!"),
 }

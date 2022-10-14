@@ -27,10 +27,8 @@ from ecology_bot.bot.dialogs.states import (
     OrganizationManagementSG,
 )
 from ecology_bot.bot.services.repo import Repo
-
-
-def is_known_user(data: dict, whenable: Any, manager: DialogManager):
-    return data["dialog_data"].get("is_known_user", False)
+from ecology_bot.bot.windows.global_event_list_window import GlobalEventListWindow
+from ecology_bot.bot.windows.global_event_window import GlobalEventWindow
 
 
 def has_profile(data: dict, whenable: Any, manager: DialogManager):
@@ -47,6 +45,10 @@ def has_unchecked_org(data: dict, whenable: Any, manager: DialogManager):
 
 def has_checked_org(data: dict, whenable: Any, manager: DialogManager):
     return data["dialog_data"].get("has_checked_org", False)
+
+
+def has_active_global_event(data: dict, whenable: Any, manager: DialogManager):
+    return data["dialog_data"].get("has_active_global_event", False)
 
 
 async def get_org_data(dialog_manager: DialogManager, **kwargs):
@@ -96,7 +98,8 @@ async def on_start(self, manager: DialogManager):
         telegram_id=telegram_id, is_checked=True
     )
     dialog_data["has_checked_org"] = bool(checked_orgs)
-    dialog_data["texts"] = ""
+    d = await repo.global_event_dao.get_active_global_events()
+    dialog_data["has_active_global_event"] = bool(d)
 
 
 def get_help_window() -> Window:
@@ -171,6 +174,12 @@ class MainMenuWindow(Window):
                 state=MainSG.org_list,
                 when=has_checked_org,
             ),
+            SwitchTo(
+                text=Const("Мероприятия"),
+                id="switch_to_global_event_list",
+                state=MainSG.global_event_list,
+                when=has_active_global_event,
+            ),
             state=MainSG.main,
             getter=self.get_data(),
         )
@@ -178,11 +187,8 @@ class MainMenuWindow(Window):
     def get_data(self):
         async def get_window_data(dialog_manager: DialogManager, **kwargs) -> dict:
             repo = dialog_manager.data["repo"]
-            user = await repo.user_dao.get_user(
-                telegram_id=dialog_manager.event.from_user.id
-            )
             messages = []
-            if user is not None:
+            if dialog_manager.data["is_known_user"]:
                 messages.append(
                     await repo.text_chunk_dao.get_text(
                         key=ON_RETURN_TEXT, default=DEFAULT_MESSAGES[ON_RETURN_TEXT]
@@ -204,12 +210,23 @@ class MainMenuWindow(Window):
 
 def get_dialog() -> Dialog:
     main_menu_window = MainMenuWindow()
+    global_event_list_window = GlobalEventListWindow(
+        state=MainSG.global_event_list,
+        next_state=MainSG.global_event,
+        prev_state=MainSG.main,
+    )
+    global_event_window = GlobalEventWindow(
+        state=MainSG.global_event,
+        prev_state=MainSG.global_event_list,
+    )
     help_window = get_help_window()
     org_list_window = get_org_list_window()
     main_menu = Dialog(
         main_menu_window,
         help_window,
         org_list_window,
+        global_event_list_window,
+        global_event_window,
         on_process_result=process_result,
         on_start=on_start,
     )

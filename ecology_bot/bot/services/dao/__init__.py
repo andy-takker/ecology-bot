@@ -2,6 +2,7 @@ from ecology_bot.bot.services.dao.activitiy import ActivityDAO
 from ecology_bot.bot.services.dao.awesome_data import AwesomeDataDAO
 from ecology_bot.bot.services.dao.district import DistrictDAO
 from ecology_bot.bot.services.dao.event import EventDAO
+from ecology_bot.bot.services.dao.global_event import GlobalEventDAO
 from ecology_bot.bot.services.dao.organization import OrganizationDAO
 from ecology_bot.bot.services.dao.region import RegionDAO
 from ecology_bot.bot.services.dao.text import TextChunkDAO
@@ -13,6 +14,7 @@ __all__ = [
     "AwesomeDataDAO",
     "DistrictDAO",
     "EventDAO",
+    "GlobalEventDAO",
     "OrganizationDAO",
     "RegionDAO",
     "TextChunkDAO",

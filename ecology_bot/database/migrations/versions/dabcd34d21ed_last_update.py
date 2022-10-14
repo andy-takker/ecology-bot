@@ -1,8 +1,8 @@
-"""empty message
+"""last update
 
-Revision ID: 015089f93c19
+Revision ID: dabcd34d21ed
 Revises: 68bdbf779a90
-Create Date: 2022-10-12 20:59:57.954798
+Create Date: 2022-10-14 10:36:44.002899
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlalchemy_utils
 
 
 # revision identifiers, used by Alembic.
-revision = "015089f93c19"
+revision = "dabcd34d21ed"
 down_revision = "68bdbf779a90"
 branch_labels = None
 depends_on = None
@@ -28,9 +28,16 @@ def upgrade() -> None:
         sa.Column(
             "updated_at", sa.DateTime(), server_default=sa.text("now()"), nullable=True
         ),
-        sa.Column("name", sa.String(), nullable=False),
+        sa.Column("name", sa.String(length=512), nullable=False),
+        sa.Column("description", sa.String(length=2048), nullable=False),
         sa.Column("is_active", sa.Boolean(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_index(
+        op.f("ix_global_event_description"),
+        "global_event",
+        ["description"],
+        unique=False,
     )
     op.create_index(op.f("ix_global_event_id"), "global_event", ["id"], unique=False)
     op.create_index(
@@ -57,6 +64,9 @@ def upgrade() -> None:
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint(
+            "user_id", "global_event_id", name="_user_id_global_event_id_uc"
+        ),
     )
     op.create_index(
         op.f("ix_global_event_user_global_event_id"),
@@ -95,5 +105,6 @@ def downgrade() -> None:
     op.drop_table("global_event_user")
     op.drop_index(op.f("ix_global_event_name"), table_name="global_event")
     op.drop_index(op.f("ix_global_event_id"), table_name="global_event")
+    op.drop_index(op.f("ix_global_event_description"), table_name="global_event")
     op.drop_table("global_event")
     # ### end Alembic commands ###
