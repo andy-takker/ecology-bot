@@ -27,7 +27,7 @@ services:
     container_name: 'bot_admin'
     restart: on-failure
     image: bot
-    command: python3 -m poetry run gunicorn -c ecology_bot/admin/gunicorn_conf.py ecology_bot.admin.wsgi:app
+    command: gunicorn -c ecology_bot/admin/gunicorn_conf.py ecology_bot.admin.wsgi:app
     environment:
       DEBUG: ${DEBUG}
 
@@ -61,7 +61,7 @@ services:
       - database
       - redis
       - worker
-    command: python3 -m poetry run bot
+    command: python ecology_bot/bot/main.py
     restart: on-failure
     build:
       context: .
@@ -82,13 +82,15 @@ services:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       TELEGRAM_BOT_ADMINS: ${TELEGRAM_BOT_ADMINS}
 
+      PYTHONPATH: "/bot"
+
   worker:
     container_name: 'bot_worker'
     image: bot
     depends_on:
       - database
       - redis
-    command: poetry run celery -A ecology_bot.workers.celery worker -l INFO
+    command: celery -A ecology_bot.workers.celery worker -l INFO
     restart: on-failure
     environment:
       DEBUG: ${DEBUG}
