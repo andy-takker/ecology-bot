@@ -1,7 +1,6 @@
 from string import ascii_lowercase, digits
 
-from redis import Redis
-from flask import flash
+from flask import flash, current_app
 from flask_admin.babel import gettext
 from wtforms import (
     Field,
@@ -28,6 +27,7 @@ def validate_key(form, field: Field):
     for letter in field.data:
         if letter not in SYMBOLS:
             raise ValidationError(KEY_NAME_ERROR)
+
 
 from ecology_bot.utils.get_settings import get_settings
 
@@ -89,25 +89,9 @@ class TextChunkModelView(SecureModelView):
             )
             self.session.rollback()
             return False
-        settings = get_settings()
-        redis = Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            password=settings.REDIS_PASSWORD,
-            db=3,
-        )
-        redis.flushdb()
-        del redis
+        current_app.extensions["redis"].delete("text_chunk:" + key.key)
         return super().create_model(form)
 
-    def delete_model(self, model):
+    def delete_model(self, model: TextChunk):
         super().delete_model(model)
-        settings = get_settings()
-        redis = Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            password=settings.REDIS_PASSWORD,
-            db=3,
-        )
-        redis.flushdb()
-        del redis
+        current_app.extensions["redis"].delete("text_chunk:" + model.key)

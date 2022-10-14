@@ -36,6 +36,9 @@ class DefaultSettings(BaseSettings):
     REDIS_PORT: int = Field(default=6379)
     REDIS_PASSWORD: str = Field(default="redis_password")
 
+    REDIS_CACHE_DB: int = Field(default=5)
+    REDIS_STORAGE_DB: int = Field(default=3)
+
     REDIS_URI: Optional[RedisDsn] = None
 
     @validator("REDIS_URI", pre=True)

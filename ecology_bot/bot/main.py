@@ -69,23 +69,17 @@ async def main():
             endpoint=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             password=settings.REDIS_PASSWORD,
-            db=3,
+            db=settings.REDIS_CACHE_DB,
         )
         storage = RedisStorage2(
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             password=settings.REDIS_PASSWORD,
-            db=5,
+            db=settings.REDIS_STORAGE_DB,
         )
-        redis = Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            password=settings.REDIS_PASSWORD,
-            db=5,
-        )
-        redis.flushdb()
+        redis = await storage.redis()
+        await redis.flushdb()
         logger.info("Redis DB was cleared!")
-        redis.close()
     bot = Bot(token=settings.TELEGRAM_BOT_TOKEN, parse_mode=ParseMode.HTML)
     dp = Dispatcher(bot, storage=storage)
 

@@ -17,7 +17,7 @@ class TextChunkDAO(DAO):
         return (await self.session.execute(q)).scalars().all()
 
     async def get_text(self, key: str, sep: str = "\n", default: str = "") -> str:
-        cache_key = "get_text" + key + "sep" + default
+        cache_key = "text_chunk:" + key
         value = await self.cache.get(cache_key)
         if value is None:
             texts = await self.get_by_key(key=key)
