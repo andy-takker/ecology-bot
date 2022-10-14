@@ -343,7 +343,7 @@ class GlobalEvent(PkMixin, TimestampMixin, Base):
     __admin_endpoint__ = "global_events"
 
     name = Column(String(512), index=True, nullable=False)
-    description = Column(String(2048), index=True, nullable=False)
+    description = Column(String(3072), index=True, nullable=False)
     is_active = Column(Boolean, default=False)
 
     users = relationship(
