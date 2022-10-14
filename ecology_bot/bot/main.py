@@ -69,7 +69,7 @@ async def main():
             endpoint=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             password=settings.REDIS_PASSWORD,
-            db=5,
+            db=3,
         )
         storage = RedisStorage2(
             host=settings.REDIS_HOST,

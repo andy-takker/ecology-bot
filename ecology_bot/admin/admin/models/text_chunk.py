@@ -94,7 +94,7 @@ class TextChunkModelView(SecureModelView):
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             password=settings.REDIS_PASSWORD,
-            db=5,
+            db=3,
         )
         redis.flushdb()
         del redis
