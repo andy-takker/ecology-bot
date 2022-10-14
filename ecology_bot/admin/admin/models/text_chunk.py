@@ -89,7 +89,7 @@ class TextChunkModelView(SecureModelView):
             )
             self.session.rollback()
             return False
-        current_app.extensions["redis"].delete("text_chunk:" + key.key)
+        current_app.extensions["redis"].delete("text_chunk:" + key)
         return super().create_model(form)
 
     def delete_model(self, model: TextChunk):
