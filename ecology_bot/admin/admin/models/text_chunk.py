@@ -99,3 +99,15 @@ class TextChunkModelView(SecureModelView):
         redis.flushdb()
         del redis
         return super().create_model(form)
+
+    def delete_model(self, model):
+        super().delete_model(model)
+        settings = get_settings()
+        redis = Redis(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            password=settings.REDIS_PASSWORD,
+            db=3,
+        )
+        redis.flushdb()
+        del redis
