@@ -188,7 +188,7 @@ class MainMenuWindow(Window):
         async def get_window_data(dialog_manager: DialogManager, **kwargs) -> dict:
             repo = dialog_manager.data["repo"]
             messages = []
-            if dialog_manager.data["is_known_user"]:
+            if dialog_manager.current_context().dialog_data["is_known_user"]:
                 messages.append(
                     await repo.text_chunk_dao.get_text(
                         key=ON_RETURN_TEXT, default=DEFAULT_MESSAGES[ON_RETURN_TEXT]
