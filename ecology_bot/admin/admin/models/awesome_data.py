@@ -19,3 +19,6 @@ class AwesomeDataModelView(SecureModelView):
         "data": "Данные",
     }
     column_sortable_list = ["description", "from_user_id"]
+
+
+IOError

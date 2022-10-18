@@ -5,7 +5,6 @@ class MainSG(StatesGroup):
     main = State()
     help = State()
     org_list = State()
-    global_event_list = State()
     global_event = State()
 
 

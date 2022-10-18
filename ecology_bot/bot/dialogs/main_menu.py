@@ -1,5 +1,6 @@
 from typing import Any
 
+from aiogram.dispatcher.filters.state import State
 from aiogram.types import CallbackQuery
 from aiogram_dialog import Dialog, Window, DialogManager, Data
 from aiogram_dialog.widgets.kbd import (
@@ -27,7 +28,6 @@ from ecology_bot.bot.dialogs.states import (
     OrganizationManagementSG,
 )
 from ecology_bot.bot.services.repo import Repo
-from ecology_bot.bot.windows.global_event_list_window import GlobalEventListWindow
 from ecology_bot.bot.windows.global_event_window import GlobalEventWindow
 
 
@@ -49,7 +49,6 @@ def has_checked_org(data: dict, whenable: Any, manager: DialogManager):
 
 def has_active_global_event(data: dict, whenable: Any, manager: DialogManager):
     return data["dialog_data"].get("has_active_global_event", False)
-
 
 async def get_org_data(dialog_manager: DialogManager, **kwargs):
     repo: Repo = dialog_manager.data["repo"]
@@ -82,22 +81,21 @@ async def on_start(self, manager: DialogManager):
     dialog_data = manager.current_context().dialog_data
     if user is not None:
         dialog_data["is_known_user"] = True
+        if user.profile is not None:
+            dialog_data["has_profile"] = True
+        else:
+            dialog_data["has_profile"] = False
+        unchecked_orgs = await repo.organization_dao.get_organizations_by_creator(
+            telegram_id=telegram_id, is_checked=False
+        )
+        dialog_data["has_unchecked_org"] = bool(unchecked_orgs)
+        checked_orgs = await repo.organization_dao.get_organizations_by_creator(
+            telegram_id=telegram_id, is_checked=True
+        )
+        dialog_data["has_checked_org"] = bool(checked_orgs)
     else:
         dialog_data["is_known_user"] = False
         await repo.user_dao.create_user(telegram_id=telegram_id, is_admin=False)
-        return
-    if user.profile is not None:
-        dialog_data["has_profile"] = True
-    else:
-        dialog_data["has_profile"] = False
-    unchecked_orgs = await repo.organization_dao.get_organizations_by_creator(
-        telegram_id=telegram_id, is_checked=False
-    )
-    dialog_data["has_unchecked_org"] = bool(unchecked_orgs)
-    checked_orgs = await repo.organization_dao.get_organizations_by_creator(
-        telegram_id=telegram_id, is_checked=True
-    )
-    dialog_data["has_checked_org"] = bool(checked_orgs)
     d = await repo.global_event_dao.get_active_global_events()
     dialog_data["has_active_global_event"] = bool(d)
 
@@ -174,11 +172,18 @@ class MainMenuWindow(Window):
                 state=MainSG.org_list,
                 when=has_checked_org,
             ),
-            SwitchTo(
-                text=Const("Мероприятия"),
-                id="switch_to_global_event_list",
-                state=MainSG.global_event_list,
-                when=has_active_global_event,
+            # SwitchTo(
+            #     text=Const("Мероприятия"),
+            #     id="switch_to_global_event_list",
+            #     state=MainSG.global_event_list,
+            #     when=has_active_global_event,
+            # ),
+            Select(
+                Format("{item.name}"),
+                id="s_globa_events",
+                item_id_getter=lambda x: x.id,
+                items="global_events",
+                on_click=self.on_click(next_state=MainSG.global_event),
             ),
             state=MainSG.main,
             getter=self.get_data(),
@@ -203,21 +208,34 @@ class MainMenuWindow(Window):
                 )
             return {
                 "start_message": "\n".join(messages),
+                "global_events": await repo.global_event_dao.get_active_global_events()
             }
 
         return get_window_data
 
+    def on_click(self, next_state: State | None = None):
+        async def on_global_event_selected(
+                c: CallbackQuery, widget: Any, dialog_manager: DialogManager, item_id: str
+        ):
+            if next_state is not None:
+                await dialog_manager.dialog().switch_to(next_state)
+            else:
+                await dialog_manager.dialog().next()
+            dialog_manager.current_context().dialog_data["global_event_id"] = int(
+                item_id
+            )
 
+        return on_global_event_selected
 def get_dialog() -> Dialog:
     main_menu_window = MainMenuWindow()
-    global_event_list_window = GlobalEventListWindow(
-        state=MainSG.global_event_list,
-        next_state=MainSG.global_event,
-        prev_state=MainSG.main,
-    )
+    # global_event_list_window = GlobalEventListWindow(
+    #     state=MainSG.global_event_list,
+    #     next_state=MainSG.global_event,
+    #     prev_state=MainSG.main,
+    # )
     global_event_window = GlobalEventWindow(
         state=MainSG.global_event,
-        prev_state=MainSG.global_event_list,
+        prev_state=MainSG.main,
     )
     help_window = get_help_window()
     org_list_window = get_org_list_window()
@@ -225,7 +243,7 @@ def get_dialog() -> Dialog:
         main_menu_window,
         help_window,
         org_list_window,
-        global_event_list_window,
+        # global_event_list_window,
         global_event_window,
         on_process_result=process_result,
         on_start=on_start,
