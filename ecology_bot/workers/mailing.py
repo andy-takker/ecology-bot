@@ -43,6 +43,7 @@ async def _execute_mailing(event_id: int) -> None:
 def execute_global_mailing(self, global_mailing_id: int) -> None:
     asyncio.run(_execute_global_mailing(global_mailing_id))
 
+
 async def _execute_global_mailing(global_mailing_id: int) -> None:
     """Выполняет рассылку по глобальным событиям"""
     settings = get_settings()
@@ -52,13 +53,17 @@ async def _execute_global_mailing(global_mailing_id: int) -> None:
     session = AsyncSession()
     repo = Repo(session=session, cache=None)
 
-    global_mailing: GlobalMailing = await repo.global_event_dao.get_global_mailing(global_mailing_id)
+    global_mailing: GlobalMailing = await repo.global_event_dao.get_global_mailing(
+        global_mailing_id
+    )
 
-    users: list[User] = await repo.global_event_dao.get_users_by_global_event(global_mailing.global_event_id)
+    users: list[User] = await repo.global_event_dao.get_users_by_global_event(
+        global_mailing.global_event_id
+    )
     for user in users:
         await bot.send_message(
             chat_id=user.telegram_id,
-            text=global_mailing.name + "\n"+global_mailing.clean_description,
+            text=global_mailing.name + "\n" + global_mailing.clean_description,
             parse_mode=types.ParseMode.HTML,
         )
     await bot.close()

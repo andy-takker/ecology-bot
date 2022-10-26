@@ -521,7 +521,9 @@ class GlobalMailing(PkMixin, TimestampMixin, Base):
 
     name = Column(String(512), index=True, nullable=False)
     description = Column(String(3072), index=True, nullable=False)
-    global_event_id = Column(BigInteger, ForeignKey("global_event.id"), index=True, nullable=False)
+    global_event_id = Column(
+        BigInteger, ForeignKey("global_event.id"), index=True, nullable=False
+    )
 
     global_event = relationship("GlobalEvent", back_populates="global_mailings")
 

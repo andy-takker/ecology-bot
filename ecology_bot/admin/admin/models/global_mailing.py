@@ -19,7 +19,9 @@ class GlobalMailingForm(Form):
         label="Глобальное событие (мероприятие)",
         validators=[DataRequired(message="Обязательное поле!")],
         allow_blank=True,
-        query_factory=lambda: get_admin_db().session.query(GlobalEvent).filter_by(is_active=True)
+        query_factory=lambda: get_admin_db()
+        .session.query(GlobalEvent)
+        .filter_by(is_active=True),
     )
     description = CKTextAreaField(
         label="Описание",

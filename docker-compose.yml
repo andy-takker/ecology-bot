@@ -26,7 +26,7 @@ services:
   admin:
     container_name: 'bot_admin'
     restart: on-failure
-    image: bot
+    image: ecology_bot/bot
     command: gunicorn -c ecology_bot/admin/gunicorn_conf.py ecology_bot.admin.wsgi:app
     environment:
       DEBUG: ${DEBUG}
@@ -48,6 +48,7 @@ services:
 
   nginx:
     container_name: 'bot_nginx'
+    image: ecology_bot/nginx
     restart: always
     build: ./docker/nginx
     ports:
@@ -55,12 +56,11 @@ services:
     depends_on:
       - admin
   bot:
-    container_name: 'bot'
-    image: bot
+    container_name: 'bot_bot'
+    image: ecology_bot/bot
     depends_on:
       - db
       - redis
-      - worker
     command: python ecology_bot/bot/main.py
     restart: on-failure
     build:
@@ -86,7 +86,7 @@ services:
 
   worker:
     container_name: 'bot_worker'
-    image: bot
+    image: ecology_bot/bot
     depends_on:
       - db
       - redis

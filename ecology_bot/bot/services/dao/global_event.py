@@ -2,7 +2,12 @@ from sqlalchemy import delete
 from sqlalchemy.future import select
 
 from ecology_bot.bot.services.dao.base import DAO
-from ecology_bot.database.models import GlobalEvent, GlobalEventUser, GlobalMailing, User
+from ecology_bot.database.models import (
+    GlobalEvent,
+    GlobalEventUser,
+    GlobalMailing,
+    User,
+)
 
 
 class GlobalEventDAO(DAO):
@@ -47,8 +52,10 @@ class GlobalEventDAO(DAO):
     async def get_global_mailing(self, global_mailing_id: int) -> GlobalMailing | None:
         return await self.session.get(GlobalMailing, global_mailing_id)
 
-    async def get_users_by_global_event(self, global_event_id:int) -> list[User]:
-        q = select(User)\
-            .join(GlobalEventUser, GlobalEventUser.user_id == User.id)\
+    async def get_users_by_global_event(self, global_event_id: int) -> list[User]:
+        q = (
+            select(User)
+            .join(GlobalEventUser, GlobalEventUser.user_id == User.id)
             .where(GlobalEventUser.global_event_id == global_event_id)
+        )
         return (await self.session.execute(q)).scalars().all()

@@ -16,7 +16,7 @@ from ecology_bot.bot.services.dao import (
 
 
 class Repo:
-    def __init__(self, session: AsyncSession, cache: Cache ):
+    def __init__(self, session: AsyncSession, cache: Cache):
         self.session = session
         self.activity_dao = ActivityDAO(session=session)
         self.awesome_data_dao = AwesomeDataDAO(session=session)

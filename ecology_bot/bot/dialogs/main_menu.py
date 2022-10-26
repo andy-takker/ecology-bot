@@ -50,6 +50,7 @@ def has_checked_org(data: dict, whenable: Any, manager: DialogManager):
 def has_active_global_event(data: dict, whenable: Any, manager: DialogManager):
     return data["dialog_data"].get("has_active_global_event", False)
 
+
 async def get_org_data(dialog_manager: DialogManager, **kwargs):
     repo: Repo = dialog_manager.data["repo"]
     return {
@@ -208,14 +209,14 @@ class MainMenuWindow(Window):
                 )
             return {
                 "start_message": "\n".join(messages),
-                "global_events": await repo.global_event_dao.get_active_global_events()
+                "global_events": await repo.global_event_dao.get_active_global_events(),
             }
 
         return get_window_data
 
     def on_click(self, next_state: State | None = None):
         async def on_global_event_selected(
-                c: CallbackQuery, widget: Any, dialog_manager: DialogManager, item_id: str
+            c: CallbackQuery, widget: Any, dialog_manager: DialogManager, item_id: str
         ):
             if next_state is not None:
                 await dialog_manager.dialog().switch_to(next_state)
@@ -226,6 +227,8 @@ class MainMenuWindow(Window):
             )
 
         return on_global_event_selected
+
+
 def get_dialog() -> Dialog:
     main_menu_window = MainMenuWindow()
     # global_event_list_window = GlobalEventListWindow(
