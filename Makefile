@@ -28,7 +28,6 @@ env: ##@Environment Create .env file with variables
 	@echo "Note: you need add Telegram Bot Token!"
 
 init: ##@Environment Init poetry project
-	@poetry shell
 	@poetry install
 	@make env
 
