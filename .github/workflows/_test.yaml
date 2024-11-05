@@ -1,0 +1,23 @@
+name: Run auto tests
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: Run service tests with pytest
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: make develop-ci
+
+      - name: Run tests
+        run: pytest -v ./tests

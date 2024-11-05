@@ -1,38 +1,17 @@
-ifeq ($(shell test -e '.env' && echo -n yes), yes)
-	include .env
-endif
+PROJECT_NAME ?= ecology_bot
+TEST_FOLDER_NAME ?= tests
+PYTHON_VERSION ?= 3.11
 
-args := $(wordlist 2, 100, $(MAKECMDGOALS))
-ifndef args
-	MESSAGE = "No such command (or you pass two or many targets to ). List of possible commands: make help"
-else
-	MESSAGE = "Done"
-endif
 
-APPLICATION_NAME = ecology_bot
+develop: clean_dev ##@Develop Create virtualenv
+	python$(PYTHON_VERSION) -m venv .venv
+	.venv/bin/pip install -U pip poetry
+	.venv/bin/poetry config virtualenvs.create false
+	.venv/bin/poetry install
+	.venv/bin/pre-commit install
 
-HELP_FUN = \
-	%help; while(<>){push@{$$help{$$2//'options'}},[$$1,$$3] \
-	if/^([\w-_]+)\s*:.*\#\#(?:@(\w+))?\s(.*)$$/}; \
-    print"$$_:\n", map"  $$_->[0]".(" "x(20-length($$_->[0])))."$$_->[1]\n",\
-    @{$$help{$$_}},"\n" for keys %help; \
-
-help: ##@Help Show this help
-	@echo -e "Usage: make [target] ... \n"
-	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
-
-env: ##@Environment Create .env file with variables
-	@$(eval SHELL:=/bin/bash)
-	@cp .env.dev .env
-	@echo "SECRET_KEY=$$(openssl rand -hex 32)" >> .env
-	@echo "Note: you need add Telegram Bot Token!"
-
-init: ##@Environment Init poetry project
-	@poetry install
-	@make env
-
-db: ##@Database Create database with docker-compose
-	@docker-compose -f docker-compose.yml up -d --remove-orphans db redis
+local: ##@Develop Run dev containers for test
+	docker compose -f docker-compose.dev.yaml up --force-recreate --renew-anon-volumes --build
 
 format: ##@Code Reformat code with black
 	poetry run python3 -m black $(APPLICATION_NAME)
@@ -43,9 +22,6 @@ migrate: ##@Database Do all migrations n database
 revision: ##@Database Create new revision file automatically with prefix (ex. 2022_01_01_34sdf23f_message.py)
 	poetry run python3 -m alembic revision --autogenerate
 
-requirements: ##@Application Update file `requirements.txt` with actual poetry packages
-	poetry export --without-hashes --format=requirements.txt > requirements.txt
-
 run: ##@Application Run all in docker compose with build
 	@docker-compose up -d --build --remove-orphans
 
@@ -55,5 +31,15 @@ run_bot:
 logs: ##@Application Show docker compose logs
 	@docker-compose logs -f
 
-%::
-	echo $(MESSAGE)
+clean_dev: ##@Develop Remove virtualenv
+	rm -rf .venv
+
+HELP_FUN = \
+	%help; while(<>){push@{$$help{$$2//'options'}},[$$1,$$3] \
+	if/^([\w-_]+)\s*:.*\#\#(?:@(\w+))?\s(.*)$$/}; \
+    print"$$_:\n", map"  $$_->[0]".(" "x(20-length($$_->[0])))."$$_->[1]\n",\
+    @{$$help{$$_}},"\n" for keys %help; \
+
+help: ##@Help Show this help
+	@echo -e "Usage: make [target] ... \n"
+	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
