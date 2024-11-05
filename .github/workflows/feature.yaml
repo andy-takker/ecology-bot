@@ -1,0 +1,21 @@
+name: Feature pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint code and check format
+    uses: ./.github/workflows/_check.yaml
+
+  test:
+    name: Run tests
+    needs: check
+    uses: ./.github/workflows/_test.yaml
